@@ -988,6 +988,98 @@ html.a11y-stop-anim footer *::after {
   .a11y-panel { width: calc(100vw - 44px); }
 }
 
+/* Accessibility Statement Modal */
+.a11y-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 20000;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.a11y-modal.open {
+  opacity: 1;
+  pointer-events: all;
+}
+.a11y-modal-box {
+  background: var(--surface);
+  border: 1px solid var(--surface-2);
+  border-radius: 4px;
+  padding: 40px 36px;
+  max-width: 640px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+  font-family: 'Heebo', sans-serif;
+  font-weight: 300;
+  font-size: 15px;
+  line-height: 1.85;
+  color: var(--text);
+}
+.a11y-modal-box h2 {
+  font-size: 24px;
+  font-weight: 200;
+  margin-bottom: 4px;
+}
+.a11y-modal-box h3 {
+  font-size: 17px;
+  font-weight: 400;
+  margin: 24px 0 8px;
+  color: var(--accent);
+}
+.a11y-modal-box p { margin-bottom: 14px; }
+.a11y-modal-box ul {
+  padding-right: 20px;
+  margin-bottom: 14px;
+}
+.a11y-modal-box ul li { margin-bottom: 6px; }
+.a11y-modal-date {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 20px;
+  letter-spacing: 0.5px;
+}
+.a11y-modal-close {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 26px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px 8px;
+  transition: color 0.2s;
+}
+.a11y-modal-close:hover { color: var(--text); }
+.footer-a11y { margin: 10px 0 6px; }
+.footer-a11y-link {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-family: 'Outfit', sans-serif;
+  font-weight: 300;
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s;
+  padding: 0;
+}
+.footer-a11y-link:hover { color: var(--accent); }
+@media (max-width: 600px) {
+  .a11y-modal-box { padding: 28px 20px; }
+}
+
 /* Per-section decorative backgrounds */
 #about { position: relative; overflow: hidden; }
 #about::before {
@@ -1474,6 +1566,39 @@ html.a11y-stop-anim footer *::after {
   </div>
 </section>
 
+<div id="a11yModal" class="a11y-modal" role="dialog" aria-modal="true" aria-labelledby="a11yModalTitle" dir="rtl">
+  <div class="a11y-modal-box">
+    <button class="a11y-modal-close" id="a11yModalClose" aria-label="סגור">&times;</button>
+    <h2 id="a11yModalTitle">הצהרת נגישות</h2>
+    <p class="a11y-modal-date">עודכן לאחרונה: יוני 2026</p>
+    <p>מספרת יואל — אומנות השיער שואפת לאפשר לאנשים עם מוגבלויות גישה שוויונית לתכנים ולשירותים המוצגים באתר זה, בהתאם לחוק שוויון זכויות לאנשים עם מוגבלות, תשנ"ח-1998, ולתקן הישראלי 5568 לנגישות תכנים באינטרנט.</p>
+    <h3>רמת הנגישות</h3>
+    <p>האתר עומד ברמת תאימות חלקית לתקן WCAG 2.1 ברמה AA. בוצעו התאמות הנגישות הבאות:</p>
+    <ul>
+      <li>תפריט נגישות הכולל: הגדלת טקסט, ניגודיות גבוהה, מצב כהה, גווני אפור, הדגשת קישורים, פונט קריא, סמן גדול ועצירת אנימציות.</li>
+      <li>שימוש בתגיות ARIA לשיפור הניווט בטכנולוגיות מסייעות.</li>
+      <li>כל הכפתורים והקישורים כוללים תיאור נגיש (aria-label).</li>
+      <li>גדלי טקסט ניתנים לשינוי ולהגדלה.</li>
+      <li>האתר מותאם לשימוש במובייל ובטאבלט.</li>
+    </ul>
+    <h3>מגבלות ידועות</h3>
+    <ul>
+      <li>חלק מהתמונות בגלריה אינן כוללות תיאור טקסטואלי מלא.</li>
+      <li>ייתכנו פערי נגישות בדפדפנים ישנים.</li>
+    </ul>
+    <h3>פנייה בנושא נגישות</h3>
+    <p>נתקלתם בבעיית נגישות באתר? נשמח לשמוע ולתקן.</p>
+    <p>
+      טלפון: <a href="tel:08-9366555" style="color:var(--accent);">08-9366555</a><br>
+      WhatsApp: <a href="https://wa.me/972549448847" target="_blank" rel="noopener" style="color:var(--accent);">054-9448847</a><br>
+      כתובת: אחד העם 26, רחובות
+    </p>
+    <p>אנו מתחייבים להגיב לפניות נגישות בתוך 5 ימי עסקים.</p>
+    <h3>גוף מפקח</h3>
+    <p>לפרטים על זכויות נגישות ניתן לפנות לנציבות שוויון זכויות לאנשים עם מוגבלות: <a href="https://www.gov.il/he/departments/negishut" target="_blank" rel="noopener" style="color:var(--accent);">אתר הנציבות</a>.</p>
+  </div>
+</div>
+
 <button id="a11yBtn" class="a11y-btn" aria-label="תפריט נגישות" aria-expanded="false" aria-controls="a11yPanel">
   <svg viewBox="0 0 24 24" aria-hidden="true">
     <circle cx="12" cy="4.5" r="2"/>
@@ -1496,6 +1621,9 @@ html.a11y-stop-anim footer *::after {
 
 <footer>
   <div>יואל · אומנות השיער · רחובות · © 2026</div>
+  <div class="footer-a11y">
+    <button id="openA11yStatement" class="footer-a11y-link">הצהרת נגישות</button>
+  </div>
   <div class="footer-credit">Built by Bar · <a href="https://wa.me/972542495650" target="_blank" rel="noopener">0542495650</a></div>
 </footer>
 
@@ -1650,6 +1778,24 @@ mobileLinks.forEach(link => {
 
   apply();
 })();
+
+const a11yModal = document.getElementById('a11yModal');
+const openBtn = document.getElementById('openA11yStatement');
+const closeBtn = document.getElementById('a11yModalClose');
+function openModal() {
+  a11yModal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  closeBtn.focus();
+}
+function closeModal() {
+  a11yModal.classList.remove('open');
+  document.body.style.overflow = '';
+  openBtn.focus();
+}
+openBtn.addEventListener('click', openModal);
+closeBtn.addEventListener('click', closeModal);
+a11yModal.addEventListener('click', (e) => { if (e.target === a11yModal) closeModal(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && a11yModal.classList.contains('open')) closeModal(); });
 </script>
 
 </body>
