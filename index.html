@@ -30,11 +30,14 @@
   --surface-2:    #6a7176;
   --slate:        #6a7176;
   --text:         #e6ebed;
-  --muted:        #a0a6aa;
+  --muted:        #b5b3b0;
   --accent:       #d4dbe0;
   --accent-hover: #ffffff;
   --accent-faint: rgba(212,219,224,0.06);
   --divider:      rgba(106,113,118,0.45);
+  --light-bg:     #f0eeeb;
+  --light-text:   #1a1916;
+  --light-muted:  #6b6760;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -74,8 +77,8 @@ img { max-width: 100%; display: block; }
 .eyebrow {
   font-family: 'Outfit', sans-serif;
   font-weight: 400;
-  font-size: 11px;
-  letter-spacing: 2.5px;
+  font-size: 13px;
+  letter-spacing: 2px;
   text-transform: uppercase;
   color: var(--slate);
   display: block;
@@ -165,9 +168,9 @@ img { max-width: 100%; display: block; }
 .btn-primary {
   font-family: 'Outfit', sans-serif;
   font-weight: 400;
-  font-size: 13px;
-  letter-spacing: 0.6px;
-  padding: 10px 22px;
+  font-size: 15px;
+  letter-spacing: 0.4px;
+  padding: 13px 30px;
   border-radius: 3px;
   border: 1px solid var(--accent);
   color: var(--bg);
@@ -177,7 +180,7 @@ img { max-width: 100%; display: block; }
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  min-height: 40px;
+  min-height: 46px;
   line-height: 1;
 }
 .btn-primary:hover { background: var(--accent-hover); color: var(--bg); border-color: var(--accent-hover); }
@@ -186,9 +189,9 @@ img { max-width: 100%; display: block; }
 .btn-ghost {
   font-family: 'Outfit', sans-serif;
   font-weight: 600;
-  font-size: 14px;
-  letter-spacing: 0.6px;
-  padding: 10px 22px;
+  font-size: 15px;
+  letter-spacing: 0.4px;
+  padding: 13px 30px;
   border-radius: 3px;
   border: 2px solid var(--accent);
   color: var(--accent-hover);
@@ -197,7 +200,7 @@ img { max-width: 100%; display: block; }
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 40px;
+  min-height: 46px;
   line-height: 1;
   cursor: pointer;
 }
@@ -350,15 +353,14 @@ section { padding: 110px 0; position: relative; }
 }
 
 /* About */
-#about {
-  background:
-    repeating-linear-gradient(
-      0deg,
-      transparent 0px, transparent 38px,
-      rgba(255,255,255,0.015) 38px, rgba(255,255,255,0.015) 39px
-    ),
-    var(--bg);
-}
+#about { background: var(--light-bg); }
+#about .eyebrow { color: var(--light-muted); }
+#about .section-title { color: var(--light-text); }
+#about .section-lead { color: var(--light-muted); }
+#about .stat-num { color: var(--light-text); }
+#about .stat-label { color: var(--light-muted); }
+#about .about-text { color: #2e2c29; }
+#about .stat + .stat::before { background: rgba(26,25,22,0.12); }
 .stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -655,17 +657,17 @@ section { padding: 110px 0; position: relative; }
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  background: var(--accent);
+  background: #25D366;
   color: var(--bg);
-  padding: 14px 28px;
+  padding: 16px 32px;
   border-radius: 3px;
   font-family: 'Outfit', sans-serif;
   font-weight: 400;
-  font-size: 15px;
+  font-size: 16px;
   letter-spacing: 0.4px;
   transition: background 0.25s ease;
 }
-.wa-btn:hover { background: var(--accent-hover); }
+.wa-btn:hover { background: #1da851; }
 .wa-btn svg { width: 18px; height: 18px; fill: var(--bg); }
 .address-line {
   margin-top: 28px;
@@ -738,6 +740,39 @@ footer {
 }
 .animate-in.in-view { opacity: 1; transform: translateY(0); }
 
+/* Service icons */
+.service-icon {
+  width: 32px;
+  height: 32px;
+  color: var(--accent);
+  margin-bottom: 18px;
+  display: block;
+  opacity: 0.9;
+}
+
+/* Testimonials — Google Reviews style */
+.testi-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.testi-avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--av-color);
+  color: #fff;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 500;
+  font-size: 17px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.testi-meta { display: flex; flex-direction: column; gap: 2px; }
+.testi-name-row { font-family: 'Outfit', sans-serif; font-weight: 400; font-size: 15px; color: var(--text); }
+.testi-date { font-family: 'Heebo', sans-serif; font-weight: 300; font-size: 12px; color: var(--muted); }
+.testi-location { font-size: 12px; color: var(--muted); font-family: 'Heebo', sans-serif; margin-top: 12px; letter-spacing: 0.5px; }
+
 /* Mobile */
 @media (max-width: 760px) {
   .hero {
@@ -784,6 +819,15 @@ footer {
   .nav-right { gap: 12px; }
 
   .phone-big { font-size: 36px; }
+  .hero-sub { color: #d0cec9; }
+  .section-lead { font-size: 16px; }
+  body { font-size: 16px; }
+  .service-card p { font-size: 16px; line-height: 1.9; }
+  .testi-text { font-size: 16px; }
+  .process-step p { font-size: 16px; }
+  .hours li { font-size: 16px; }
+  .stat-label { font-size: 15px; }
+  .about-text { font-size: 17px; }
 }
 @media (max-width: 420px) {
   .nav-right .btn-primary { display: none; }
@@ -960,8 +1004,8 @@ html.a11y-stop-anim footer *::after {
   font-family: 'Outfit', sans-serif;
   font-weight: 100;
   font-size: clamp(180px, 22vw, 320px);
-  color: var(--accent);
-  opacity: 0.03;
+  color: #1a1916;
+  opacity: 0.04;
   line-height: 1;
   pointer-events: none;
   user-select: none;
@@ -1138,9 +1182,9 @@ html.a11y-stop-anim footer *::after {
     <div class="nav-links">
       <a href="#about" class="nav-link">אודות</a>
       <span class="nav-dot" aria-hidden="true"></span>
-      <a href="#services" class="nav-link">שירותים</a>
-      <span class="nav-dot" aria-hidden="true"></span>
       <a href="#gallery" class="nav-link">גלריה</a>
+      <span class="nav-dot" aria-hidden="true"></span>
+      <a href="#services" class="nav-link">שירותים</a>
       <span class="nav-dot" aria-hidden="true"></span>
       <a href="#contact" class="nav-link">צור קשר</a>
     </div>
@@ -1169,8 +1213,8 @@ html.a11y-stop-anim footer *::after {
 <div class="mobile-menu" id="mobileMenu">
   <nav class="mobile-nav">
     <a href="#about" class="mobile-link">אודות</a>
-    <a href="#services" class="mobile-link">שירותים</a>
     <a href="#gallery" class="mobile-link">גלריה</a>
+    <a href="#services" class="mobile-link">שירותים</a>
     <a href="#process" class="mobile-link">התהליך</a>
     <a href="#testimonials" class="mobile-link">המלצות</a>
     <a href="#contact" class="mobile-link">צור קשר</a>
@@ -1221,49 +1265,9 @@ html.a11y-stop-anim footer *::after {
   </div>
 </section>
 
-<section id="services">
-  <div class="container">
-    <span class="eyebrow animate-in" style="font-size: 1px">שירותים</span>
-    <h2 class="section-title animate-in">השירותים שלנו</h2>
-    <p class="section-lead animate-in">טיפוח שיער מקצועי, התמחות מיוחדת בתלתלים ובצבע ללא אמוניה.</p>
-    <div class="services-grid">
-      <div class="service-card animate-in">
-        <span class="service-index">01 / שירות</span>
-        <h3>התמחות בשיער מתולתל</h3>
-        <p>התמחות בכל סוגי השיער המתולתל. ייעוץ והתאמה אישית של מוצרים וטכניקות לפי מבנה התלתל בשיערך.</p>
-      </div>
-      <div class="service-card animate-in">
-        <span class="service-index">02 / שירות</span>
-        <h3>החלקות שיער</h3>
-        <p>החלקה יפנית, אורגנית ומשקמת — לכל סוג שיער. תוצאה ארוכת טווח עם החומרים האיכותיים ביותר</p>
-      </div>
-      <div class="service-card animate-in">
-        <span class="service-index">03 / שירות</span>
-        <h3>צבע ללא אמוניה</h3>
-        <p>צבעי מונטניבלו ספרדי ומותגי צבעים מובילים נוספים. מתאים לכלל סוגי השיער.</p>
-      </div>
-      <div class="service-card animate-in">
-        <span class="service-index">04 / שירות</span>
-        <h3>איפור, סירוק וליווי כלות</h3>
-        <p>תסרוקות ערב, כלות, אירועים. שירות שלם כולל איפור, מניקור ופדיקור — ניסיון של עשרות שנים.</p>
-      </div>
-      <div class="service-card animate-in">
-        <span class="service-index">05 / שירות</span>
-        <h3>התמחות בהתאמת כל סוגי הגוונים</h3>
-        <p>בליאז', אומברה, גווני שמש, מלאנז' והבהרות — התאמה אישית של הגוון למבנה הפנים, גוון העור וסגנון החיים.</p>
-      </div>
-      <div class="service-card animate-in">
-        <span class="service-index">06 / שירות</span>
-        <h3>מניקור, פדיקור וטיפולי פנים</h3>
-        <p>טיפוח שלם במקום אחד — מניקור ופדיקור מקצועיים, וטיפולי פנים לעור זוהר ובריא. חוויה רגועה ויסודית בכל ביקור.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
 <section id="gallery">
   <div class="container">
-    <span class="eyebrow animate-in" style="font-size: 15px">גלריה</span>
+    <span class="eyebrow animate-in">גלריה</span>
     <h2 class="section-title animate-in">העבודות שלנו</h2>
     <p class="section-lead animate-in">תלתלים, צבעים, תסרוקות ועוד — מבחר מהמספרה.</p>
     <div class="gallery-grid">
@@ -1294,24 +1298,106 @@ html.a11y-stop-anim footer *::after {
   </div>
 </section>
 
+<section id="services">
+  <div class="container">
+    <span class="eyebrow animate-in">שירותים</span>
+    <h2 class="section-title animate-in">השירותים שלנו</h2>
+    <p class="section-lead animate-in">טיפוח שיער מקצועי, התמחות מיוחדת בתלתלים ובצבע ללא אמוניה.</p>
+    <div class="services-grid">
+      <div class="service-card animate-in">
+        <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3">
+          <path d="M12 3C8 3 5 6 5 9.5C5 13 8 15 11 15C13.5 15 15 13.5 15 11.5C15 10 13.8 9 12.5 9C11.5 9 11 9.8 11 10.5C11 11.2 11.5 11.5 12 11.5"/>
+          <path d="M12 15C9 15 6 17.5 6 20.5" stroke-linecap="round"/>
+        </svg>
+        <span class="service-index">01 / שירות</span>
+        <h3>התמחות בשיער מתולתל</h3>
+        <p>התמחות בכל סוגי השיער המתולתל. ייעוץ והתאמה אישית של מוצרים וטכניקות לפי מבנה התלתל בשיערך.</p>
+      </div>
+      <div class="service-card animate-in">
+        <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3">
+          <path d="M4 8 Q12 6 20 8" stroke-linecap="round"/>
+          <path d="M4 12 Q12 10 20 12" stroke-linecap="round"/>
+          <path d="M4 16 Q12 14 20 16" stroke-linecap="round"/>
+          <rect x="2" y="6" width="3" height="12" rx="1"/>
+          <rect x="19" y="6" width="3" height="12" rx="1"/>
+        </svg>
+        <span class="service-index">02 / שירות</span>
+        <h3>החלקות שיער</h3>
+        <p>החלקה יפנית, אורגנית ומשקמת — לכל סוג שיער. תוצאה ארוכת טווח עם החומרים האיכותיים ביותר</p>
+      </div>
+      <div class="service-card animate-in">
+        <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3">
+          <path d="M12 3 L18 12 C18 15.3 15.3 18 12 18 C8.7 18 6 15.3 6 12 Z" stroke-linejoin="round"/>
+          <path d="M19 17 C19 19 20.5 20 20.5 21" stroke-linecap="round"/>
+          <circle cx="20.5" cy="21.5" r="0.7" fill="currentColor"/>
+        </svg>
+        <span class="service-index">03 / שירות</span>
+        <h3>צבע ללא אמוניה</h3>
+        <p>צבעי מונטניבלו ספרדי ומותגי צבעים מובילים נוספים. מתאים לכלל סוגי השיער.</p>
+      </div>
+      <div class="service-card animate-in">
+        <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3">
+          <path d="M12 2 L13.5 8.5 L20 7 L15.5 12 L20 17 L13.5 15.5 L12 22 L10.5 15.5 L4 17 L8.5 12 L4 7 L10.5 8.5 Z" stroke-linejoin="round"/>
+        </svg>
+        <span class="service-index">04 / שירות</span>
+        <h3>איפור, סירוק וליווי כלות</h3>
+        <p>תסרוקות ערב, כלות, אירועים. שירות שלם כולל איפור, מניקור ופדיקור — ניסיון של עשרות שנים.</p>
+      </div>
+      <div class="service-card animate-in">
+        <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12" stroke-linecap="round"/>
+        </svg>
+        <span class="service-index">05 / שירות</span>
+        <h3>התמחות בהתאמת כל סוגי הגוונים</h3>
+        <p>בליאז', אומברה, גווני שמש, מלאנז' והבהרות — התאמה אישית של הגוון למבנה הפנים, גוון העור וסגנון החיים.</p>
+      </div>
+      <div class="service-card animate-in">
+        <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3">
+          <path d="M12 22C6.5 22 2 17.5 2 12S6.5 2 12 2s10 4.5 10 10-4.5 10-10 10z"/>
+          <path d="M8 14s1.5 2 4 2 4-2 4-2" stroke-linecap="round"/>
+          <circle cx="9" cy="10" r="1" fill="currentColor" stroke="none"/>
+          <circle cx="15" cy="10" r="1" fill="currentColor" stroke="none"/>
+        </svg>
+        <span class="service-index">06 / שירות</span>
+        <h3>מניקור, פדיקור וטיפולי פנים</h3>
+        <p>טיפוח שלם במקום אחד — מניקור ופדיקור מקצועיים, וטיפולי פנים לעור זוהר ובריא. חוויה רגועה ויסודית בכל ביקור.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section id="process" class="process">
   <div class="container">
-    <span class="eyebrow animate-in" style="font-size: 16px">תהליך</span>
-    <h2 class="section-title animate-in">איך עובדים אצלנו</h2>
+    <span class="eyebrow animate-in">חוויה</span>
+    <h2 class="section-title animate-in">השירות שלנו</h2>
     <p class="section-lead animate-in">ייעוץ ישיר, תוצאה שמחזיקה.</p>
     <div class="process-grid">
       <div class="process-step animate-in">
-        <div class="process-num">1</div>
+        <div class="process-num">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" width="26" height="26">
+            <path d="M21 15C21 15.5304 20.7893 16.0391 20.4142 16.4142C20.0391 16.7893 19.5304 17 19 17H7L3 21V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V15Z" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
         <h3>ייעוץ אישי</h3>
         <p>שיחה על השיער, הסגנון והמטרה שלך. הבנה מלאה לפני שמתחילים.</p>
       </div>
       <div class="process-step animate-in">
-        <div class="process-num">2</div>
+        <div class="process-num">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" width="26" height="26">
+            <circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/>
+            <path d="M20 4 L8.12 15.88 M14.47 14.48 L20 20 M8.12 8.12 L12 12" stroke-linecap="round"/>
+          </svg>
+        </div>
         <h3>טיפול מקצועי</h3>
         <p>עם חומרים מהטובים בשוק, ידיים מנוסות, וקשב לכל פרט.</p>
       </div>
       <div class="process-step animate-in">
-        <div class="process-num">3</div>
+        <div class="process-num">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" width="26" height="26">
+            <path d="M12 2 L14 9 L21 9 L15.5 13.5 L17.5 20.5 L12 16 L6.5 20.5 L8.5 13.5 L3 9 L10 9 Z" stroke-linejoin="round"/>
+          </svg>
+        </div>
         <h3>יציאה מושלמת</h3>
         <p>תוצאה שמחזיקה לאורך זמן ולקוחה מרוצה שחוזרת.</p>
       </div>
@@ -1321,24 +1407,45 @@ html.a11y-stop-anim footer *::after {
 
 <section id="testimonials">
   <div class="container">
-    <span class="eyebrow animate-in" style="font-size: 16px">המלצות</span>
+    <span class="eyebrow animate-in">המלצות</span>
     <h2 class="section-title animate-in">מה לקוחות אומרות</h2>
     <p class="section-lead animate-in">לקוחות שחוזרות — ומביאות את הבנות שלהן.</p>
     <div class="testi-grid">
-      <div class="testi animate-in">
+      <div class="testi animate-in" style="transition-delay: 0s;">
+        <div class="testi-header">
+          <div class="testi-avatar" style="--av-color: #4285f4;">ש</div>
+          <div class="testi-meta">
+            <div class="testi-name-row">שירה כ.</div>
+            <div class="testi-date">לפני 3 חודשים · Google</div>
+          </div>
+        </div>
         <div class="stars">★★★★★</div>
         <p class="testi-text">"לא מוכנה להחליף אותו בחיים — 11 שנים אצל יואל ואני תמיד יוצאת מאושרת."</p>
-        <div class="testi-name">שירה כ. · שכונת רמות</div>
+        <div class="testi-location">שכונת רמות</div>
       </div>
-      <div class="testi animate-in">
+      <div class="testi animate-in" style="transition-delay: 0.1s;">
+        <div class="testi-header">
+          <div class="testi-avatar" style="--av-color: #ea4335;">מ</div>
+          <div class="testi-meta">
+            <div class="testi-name-row">מיכל ר.</div>
+            <div class="testi-date">לפני 7 חודשים · Google</div>
+          </div>
+        </div>
         <div class="stars">★★★★★</div>
         <p class="testi-text">"ההחלקה יצאה מעבר לציפיות — מחזיקה מעולה. יואל הוא הכי טוב שיש."</p>
-        <div class="testi-name">מיכל ר. · נס ציונה</div>
+        <div class="testi-location">נס ציונה</div>
       </div>
-      <div class="testi animate-in">
+      <div class="testi animate-in" style="transition-delay: 0.2s;">
+        <div class="testi-header">
+          <div class="testi-avatar" style="--av-color: #0f9d58;">ד</div>
+          <div class="testi-meta">
+            <div class="testi-name-row">דנה ש.</div>
+            <div class="testi-date">לפני שנה · Google</div>
+          </div>
+        </div>
         <div class="stars">★★★★★</div>
         <p class="testi-text">"יחס חם ומקצועיות ברמה שלא מוצאים היום — מגיעה מהרצליה בשבילו."</p>
-        <div class="testi-name">דנה ש. · הרצליה</div>
+        <div class="testi-location">הרצליה</div>
       </div>
     </div>
   </div>
