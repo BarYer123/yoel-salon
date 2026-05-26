@@ -353,7 +353,11 @@ section { padding: 110px 0; position: relative; }
 }
 
 /* About */
-#about { background: var(--light-bg); }
+#about {
+  background:
+    radial-gradient(ellipse 100% 55% at 50% 0%, rgba(106,113,118,0.09) 0%, transparent 65%),
+    var(--light-bg);
+}
 #about .eyebrow { color: var(--light-muted); }
 #about .section-title { color: var(--light-text); }
 #about .section-lead { color: var(--light-muted); }
