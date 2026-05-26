@@ -1,0 +1,1553 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>יואל — אומנות השיער | רחובות</title>
+<meta name="description" content="יואל — אומנות השיער. 40 שנות ניסיון ברחובות. מומחה תלתלים, החלקות, צבע טבעוני ותסרוקות כלות.">
+<link rel="icon" type="image/jpeg" href="images/logo.jpeg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;600;700&family=Heebo:wght@300;400&family=Caveat:wght@600&display=swap" rel="stylesheet">
+<style>
+@font-face {
+  font-family: 'GveretLevin';
+  src: url('./GveretLevinAlefAlefAlef-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'FrankRuhlLibre';
+  src: url('./FrankRuhlLibre-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+}
+</style>
+<style>
+:root {
+  --bg:           #1f2426;
+  --surface:      #484f54;
+  --surface-2:    #6a7176;
+  --slate:        #6a7176;
+  --text:         #e6ebed;
+  --muted:        #a0a6aa;
+  --accent:       #d4dbe0;
+  --accent-hover: #ffffff;
+  --accent-faint: rgba(212,219,224,0.06);
+  --divider:      rgba(106,113,118,0.45);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Heebo', sans-serif;
+  font-weight: 300;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.88;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 200;
+  line-height: 1.25;
+  color: var(--text);
+}
+
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+.container { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+
+/* Global grain */
+#grain {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  pointer-events: none;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='250' height='250' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Section labels (eyebrows) */
+.eyebrow {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 400;
+  font-size: 11px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--slate);
+  display: block;
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+/* Navbar */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(106,113,118,0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--accent);
+  transition: background 0.35s ease, box-shadow 0.35s ease;
+}
+.nav.scrolled {
+  background: rgba(106,113,118,0.98);
+  box-shadow: 0 1px 24px rgba(26,18,16,0.06);
+}
+.nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  max-width: 1180px;
+  margin: 0 auto;
+  gap: 24px;
+  position: relative;
+}
+.logo { display: flex; flex-direction: column; align-items: center; gap: 4px; line-height: 1; }
+.logo-tagline { font-family: 'Outfit', sans-serif; font-weight: 400; font-size: 14px; color: #fff; letter-spacing: 2px; }
+.logo-text { display: flex; flex-direction: column; gap: 3px; }
+.logo-img { height: 44px; width: auto; display: block; background: var(--bg); border-radius: 2px; }
+.logo-name { font-family: 'FrankRuhlLibre', serif; font-weight: 500; font-size: 28px; color: var(--text); letter-spacing: 1px; }
+.logo-rule { display: block; width: 38px; height: 1px; background: var(--accent); opacity: 0.55; }
+.logo-sub  { font-family: 'Outfit', sans-serif; font-weight: 300; font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--muted); }
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+.nav-dot {
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.35;
+}
+.nav-link {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 300;
+  font-size: 15px;
+  color: var(--muted);
+  letter-spacing: 0.2px;
+  position: relative;
+  transition: color 0.2s;
+  padding: 4px 0;
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  right: 0;
+  width: 0;
+  height: 1px;
+  background: var(--accent);
+  transition: width 0.28s ease;
+}
+.nav-link:hover { color: var(--text); }
+.nav-link:hover::after { width: 100%; }
+
+.nav-right { display: flex; align-items: center; gap: 16px; }
+.icon-link { display: inline-flex; transition: opacity 0.2s ease; }
+.icon-link:hover { opacity: 0.7; }
+.icon-link svg { width: 26px; height: 26px; display: block; }
+.nav-divider { width: 1px; height: 22px; background: var(--accent); opacity: 0.25; }
+.nav .btn-primary { font-size: 15px; padding: 11px 26px; }
+
+/* Buttons */
+.btn-primary {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 400;
+  font-size: 13px;
+  letter-spacing: 0.6px;
+  padding: 10px 22px;
+  border-radius: 3px;
+  border: 1px solid var(--accent);
+  color: var(--bg);
+  background: var(--accent);
+  transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  min-height: 40px;
+  line-height: 1;
+}
+.btn-primary:hover { background: var(--accent-hover); color: var(--bg); border-color: var(--accent-hover); }
+.btn-primary span { position: relative; }
+
+.btn-ghost {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.6px;
+  padding: 10px 22px;
+  border-radius: 3px;
+  border: 2px solid var(--accent);
+  color: var(--accent-hover);
+  background: transparent;
+  transition: background 0.25s ease, color 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  line-height: 1;
+  cursor: pointer;
+}
+.btn-ghost:hover { background: var(--accent); color: var(--bg); }
+
+/* Hero */
+.hero {
+  min-height: 640px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 30px 24px 100px;
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(31,36,38,0.4) 0%,
+      rgba(31,36,38,0.3) 40%,
+      rgba(31,36,38,0.6) 100%
+    ),
+    url('./hero-salon.jpg') center center / cover no-repeat;
+}
+
+.hero-ghost {
+  position: absolute;
+  bottom: -4%;
+  right: -2%;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 100;
+  font-size: clamp(220px, 28vw, 420px);
+  color: var(--accent);
+  opacity: 0.038;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+  letter-spacing: -8px;
+}
+
+.hero-inner {
+  max-width: 860px;
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+.hero-tint {
+  position: absolute;
+  inset: 0;
+  background: rgba(31,36,38,0.20);
+  mix-blend-mode: color;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.hero-eyebrow {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 300;
+  font-size: 11px;
+  letter-spacing: 3.5px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 28px;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+}
+.hero-eyebrow::before,
+.hero-eyebrow::after {
+  content: '';
+  width: 28px; height: 1px;
+  background: var(--accent);
+  opacity: 0.45;
+}
+
+.hero h1 {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 100;
+  font-size: clamp(44px, 6vw, 84px);
+  letter-spacing: 0.5px;
+  line-height: 1.1;
+  margin-bottom: 26px;
+}
+.hero h1 .accent-word { color: var(--accent); font-weight: 600; }
+
+.hero-sub {
+  font-family: 'Heebo', sans-serif;
+  font-weight: 300;
+  font-size: 17px;
+  color: var(--muted);
+  margin: 0 auto 44px;
+  max-width: 580px;
+  line-height: 1.85;
+}
+.hero-buttons {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 36px;
+  margin-bottom: 64px;
+}
+
+.hero-meta {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 28px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 400;
+  font-size: 13px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #ffffff;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.5);
+  flex-wrap: wrap;
+}
+.hero-meta-dot {
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.4;
+}
+
+.fade-load { opacity: 0; transform: translateY(22px); animation: fadeUp 0.9s ease-out forwards; }
+.fade-load.d1 { animation-delay: 0.1s; }
+.fade-load.d2 { animation-delay: 0.25s; }
+.fade-load.d3 { animation-delay: 0.42s; }
+.fade-load.d4 { animation-delay: 0.58s; }
+@keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+/* Section base */
+section { padding: 110px 0; position: relative; }
+.section-title {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 200;
+  font-size: clamp(32px, 4vw, 48px);
+  text-align: center;
+  margin-bottom: 16px;
+  line-height: 1.2;
+}
+.section-lead {
+  text-align: center;
+  color: var(--muted);
+  max-width: 620px;
+  margin: 0 auto 64px;
+  font-size: 15px;
+  font-family: 'Heebo', sans-serif;
+  font-weight: 300;
+  line-height: 1.88;
+}
+
+/* About */
+#about {
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px, transparent 38px,
+      rgba(255,255,255,0.015) 38px, rgba(255,255,255,0.015) 39px
+    ),
+    var(--bg);
+}
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+  margin-bottom: 72px;
+  max-width: 960px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.stat {
+  text-align: center;
+  padding: 12px;
+  position: relative;
+}
+.stat + .stat::before {
+  content: '';
+  position: absolute;
+  top: 16px;
+  bottom: 16px;
+  right: -20px;
+  width: 1px;
+  background: var(--divider);
+}
+.stat-num {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 100;
+  font-size: 68px;
+  color: var(--accent);
+  line-height: 1;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 2px;
+}
+.stat-num .plus { font-size: 36px; font-weight: 200; }
+.stat-label {
+  font-family: 'Heebo', sans-serif;
+  font-weight: 300;
+  font-size: 14px;
+  color: var(--muted);
+  margin-top: 8px;
+  letter-spacing: 0.3px;
+}
+.about-text {
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: center;
+  font-size: 17px;
+  color: var(--text);
+  line-height: 1.95;
+  font-family: 'Heebo', sans-serif;
+  font-weight: 300;
+}
+
+/* Services */
+#services {
+  background:
+    radial-gradient(circle, rgba(139,90,58,0.12) 1px, transparent 1px),
+    var(--surface);
+  background-size: 100% 100%, 26px 26px;
+  clip-path: polygon(0 2.5%, 100% 0, 100% 100%, 0 100%);
+  margin-top: -2.5%;
+  padding-top: calc(110px + 2.5%);
+}
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 22px;
+}
+.service-card {
+  background: var(--surface);
+  border: 1px solid var(--surface-2);
+  border-radius: 4px;
+  padding: 36px 30px;
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
+}
+.service-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  border-top: 2px solid var(--accent);
+  border-left: 2px solid var(--accent);
+  transition: width 0.35s ease, height 0.35s ease;
+}
+.service-card:hover::before { width: 36px; height: 36px; }
+.service-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 40px rgba(106,113,118,0.4);
+  border-color: var(--slate);
+}
+.service-index {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 300;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--muted);
+  margin-bottom: 16px;
+  display: block;
+}
+.service-card h3 {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 200;
+  font-size: 26px;
+  margin-bottom: 14px;
+  line-height: 1.25;
+}
+.service-card p {
+  font-family: 'Heebo', sans-serif;
+  font-weight: 300;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.88;
+}
+
+/* Gallery */
+#gallery { background: var(--bg); }
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+.gallery-slot { aspect-ratio: 1; border-radius: 2px; overflow: hidden; }
+.gallery-slot img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+.gallery-slot:hover img { transform: scale(1.04); }
+.gallery-more { margin-top: 12px; }
+.gallery-grid[hidden] { display: none; }
+.gallery-cta { display: flex; justify-content: center; margin-top: 36px; }
+.gallery-placeholder {
+  width: 100%; height: 100%;
+  background: linear-gradient(135deg, var(--surface) 0%, var(--surface-2) 100%);
+  border: 1px dashed rgba(139,90,58,0.22);
+  border-radius: 2px;
+  display: flex; align-items: center; justify-content: center;
+}
+.gallery-placeholder span {
+  font-family: 'Heebo', sans-serif;
+  font-weight: 300;
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 1px;
+}
+
+/* Process */
+.process {
+  background:
+    repeating-linear-gradient(
+      135deg,
+      transparent 0px, transparent 12px,
+      rgba(139,90,58,0.03) 12px, rgba(139,90,58,0.03) 13px
+    ),
+    var(--surface-2);
+  clip-path: polygon(0 0, 100% 2%, 100% 100%, 0 98%);
+  padding: calc(110px + 2%) 0;
+}
+.process-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  position: relative;
+}
+.process-grid::before {
+  content: '';
+  position: absolute;
+  top: 28px;
+  right: 17%;
+  left: 17%;
+  height: 1px;
+  background: linear-gradient(to left, transparent, rgba(139,90,58,0.25), transparent);
+}
+.process-step {
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  padding: 0 12px;
+}
+.process-num {
+  width: 56px;
+  height: 56px;
+  border-radius: 4px;
+  border: 1px solid var(--accent);
+  background: var(--bg);
+  font-family: 'Outfit', sans-serif;
+  font-weight: 200;
+  font-size: 26px;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 22px;
+}
+.process-step h3 {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 200;
+  font-size: 22px;
+  margin-bottom: 12px;
+}
+.process-step p {
+  font-family: 'Heebo', sans-serif;
+  font-weight: 300;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.85;
+}
+
+/* Testimonials */
+#testimonials { background: var(--bg); }
+.testi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+.testi {
+  background: var(--surface);
+  border: 1px solid var(--surface-2);
+  border-radius: 4px;
+  padding: 32px 28px;
+  border-bottom: 3px solid var(--slate);
+  display: flex;
+  flex-direction: column;
+}
+.stars {
+  color: var(--accent);
+  letter-spacing: 2px;
+  font-size: 15px;
+  margin-bottom: 16px;
+}
+.testi-text {
+  font-family: 'Heebo', sans-serif;
+  font-weight: 300;
+  font-size: 15px;
+  line-height: 1.88;
+  margin-bottom: 22px;
+  color: var(--text);
+  flex: 1;
+}
+.testi-name {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 300;
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Contact */
+#contact {
+  background:
+    radial-gradient(ellipse 60% 70% at 0% 100%, rgba(139,90,58,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 50% at 100% 0%, rgba(180,130,90,0.05) 0%, transparent 55%),
+    var(--surface);
+  clip-path: polygon(0 2.5%, 100% 0, 100% 100%, 0 100%);
+  margin-top: -2.5%;
+  padding-top: calc(110px + 2.5%);
+}
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: start;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.contact-block h3 {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 200;
+  font-size: 24px;
+  margin-bottom: 24px;
+}
+.contact-block p {
+  font-family: 'Heebo', sans-serif;
+  font-weight: 300;
+  color: var(--muted);
+  margin-bottom: 28px;
+  font-size: 15px;
+  line-height: 1.88;
+}
+.phone-big {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 100;
+  font-size: 48px;
+  color: var(--accent);
+  display: inline-block;
+  direction: ltr;
+  margin-bottom: 24px;
+  border-bottom: 1px solid rgba(139,90,58,0.2);
+  padding-bottom: 6px;
+  line-height: 1.2;
+  transition: opacity 0.2s;
+  letter-spacing: 0.5px;
+}
+.phone-big:hover { opacity: 0.7; }
+.wa-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--accent);
+  color: var(--bg);
+  padding: 14px 28px;
+  border-radius: 3px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 400;
+  font-size: 15px;
+  letter-spacing: 0.4px;
+  transition: background 0.25s ease;
+}
+.wa-btn:hover { background: var(--accent-hover); }
+.wa-btn svg { width: 18px; height: 18px; fill: var(--bg); }
+.address-line {
+  margin-top: 28px;
+  font-family: 'Heebo', sans-serif;
+  font-weight: 300;
+  font-size: 15px;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.address-line::before {
+  content: '';
+  width: 20px; height: 1px;
+  background: var(--accent);
+  opacity: 0.5;
+}
+.hours {
+  list-style: none;
+}
+.hours li {
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--divider);
+  font-family: 'Heebo', sans-serif;
+  font-weight: 300;
+  font-size: 15px;
+}
+.hours li:last-child { border-bottom: none; }
+.hours .day { color: var(--text); }
+.hours .time {
+  color: var(--muted);
+  direction: ltr;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 300;
+  letter-spacing: 0.5px;
+}
+
+/* Footer */
+footer {
+  background: var(--bg);
+  padding: 40px 24px;
+  text-align: center;
+  border-top: 1px solid var(--divider);
+  color: var(--muted);
+  font-family: 'Outfit', sans-serif;
+  font-weight: 300;
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.footer-credit {
+  margin-top: 10px;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  opacity: 0.85;
+}
+.footer-credit a {
+  color: var(--accent);
+  transition: opacity 0.2s ease;
+}
+.footer-credit a:hover { opacity: 0.7; }
+
+/* Animate-in */
+.animate-in {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.55s ease-out, transform 0.55s ease-out;
+}
+.animate-in.in-view { opacity: 1; transform: translateY(0); }
+
+/* Mobile */
+@media (max-width: 760px) {
+  .hero {
+    padding: 180px 20px 90px;
+    align-items: flex-start;
+    min-height: calc(100vh - 70px);
+    background:
+      linear-gradient(
+        to bottom,
+        rgba(31,36,38,0.4) 0%,
+        rgba(31,36,38,0.3) 40%,
+        rgba(31,36,38,0.6) 100%
+      ),
+      url('./hero-salon-mobile.jpg') center center / cover no-repeat;
+  }
+  .hero-inner { padding-top: 80px; }
+  .hero h1 { font-size: 36px; font-weight: 600; text-shadow: 0 2px 12px rgba(0,0,0,0.55); color: #ffffff; }
+  .hero h1 .accent-word { font-weight: 800; color: #ffffff; }
+  .hero-eyebrow { position: absolute; top: 16%; left: 0; right: 0; margin: 0; color: #ffffff !important; text-shadow: 0 1px 8px rgba(0,0,0,0.5); justify-content: center; }
+  .hero-sub { font-size: 15px; margin-bottom: 36px; }
+  .hero-ghost { display: block; font-size: 180px; bottom: -2%; right: -4%; opacity: 0.045; }
+  .hero-meta { font-size: 14px; gap: 18px; font-weight: 500; letter-spacing: 2.5px; color: #ffffff; margin-top: 32px; text-shadow: 0 1px 8px rgba(0,0,0,0.5); }
+  .hero-meta-dot { width: 4px !important; height: 4px !important; opacity: 0.8 !important; }
+
+  section { padding: 70px 0; }
+  .section-title { font-size: 30px; }
+
+  #services, #contact { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); margin-top: 0; padding-top: 70px; }
+  .process { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); padding: 70px 0; }
+
+  .stats { grid-template-columns: 1fr; gap: 36px; }
+  .stat + .stat::before { display: none; }
+  .stat-num { font-size: 52px; }
+
+  .services-grid, .testi-grid, .contact-grid { grid-template-columns: 1fr; gap: 16px; }
+  .contact-grid { gap: 48px; }
+  .gallery-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+
+  .process-grid { grid-template-columns: 1fr; gap: 36px; }
+  .process-grid::before { display: none; }
+
+  .nav-links { display: none; }
+  .nav-inner { padding: 14px 16px; gap: 12px; }
+  .nav-right { gap: 12px; }
+
+  .phone-big { font-size: 36px; }
+}
+@media (max-width: 420px) {
+  .nav-right .btn-primary { display: none; }
+}
+
+/* Accessibility Menu */
+.a11y-btn {
+  position: fixed;
+  bottom: 22px;
+  left: 22px;
+  z-index: 9999;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid #fff;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.25);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+.a11y-btn:hover { background: var(--accent-hover); transform: scale(1.05); }
+.a11y-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.a11y-btn svg { width: 28px; height: 28px; fill: var(--bg); }
+
+.a11y-panel {
+  position: fixed;
+  bottom: 88px;
+  left: 22px;
+  z-index: 9999;
+  width: 280px;
+  background: #fff;
+  border: 1px solid var(--divider);
+  border-radius: 6px;
+  padding: 18px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  font-family: 'Heebo', sans-serif;
+  direction: rtl;
+}
+.a11y-panel.open { opacity: 1; transform: translateY(0); pointer-events: auto; }
+.a11y-panel h4 {
+  font-family: 'Heebo', sans-serif;
+  font-weight: 500;
+  font-size: 15px;
+  margin: 0 0 14px;
+  color: var(--text);
+  text-align: right;
+  border-bottom: 1px solid var(--divider);
+  padding-bottom: 10px;
+}
+.a11y-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.a11y-option {
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 3px;
+  padding: 10px 8px;
+  font-family: 'Heebo', sans-serif;
+  font-weight: 300;
+  font-size: 12px;
+  color: var(--bg);
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  text-align: center;
+  line-height: 1.3;
+}
+.a11y-option:hover { background: var(--accent-hover); border-color: var(--accent-hover); color: var(--bg); }
+.a11y-option.active { background: var(--accent-hover); border-color: var(--accent-hover); color: var(--bg); }
+.a11y-reset {
+  width: 100%;
+  margin-top: 10px;
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  color: var(--bg);
+  border-radius: 3px;
+  padding: 9px;
+  font-family: 'Heebo', sans-serif;
+  font-weight: 400;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+.a11y-reset:hover { background: var(--accent-hover); border-color: var(--accent-hover); color: var(--bg); }
+
+/* a11y modes — scoped to site content only, never affect a11y UI */
+html.a11y-font-lg body { font-size: 18px; }
+html.a11y-font-xl body { font-size: 21px; }
+
+html.a11y-contrast nav,
+html.a11y-contrast header,
+html.a11y-contrast section,
+html.a11y-contrast footer { filter: contrast(1.45); }
+
+html.a11y-grayscale nav,
+html.a11y-grayscale header,
+html.a11y-grayscale section,
+html.a11y-grayscale footer { filter: grayscale(1); }
+
+html.a11y-dark body { background: #000 !important; }
+html.a11y-dark nav,
+html.a11y-dark header,
+html.a11y-dark section,
+html.a11y-dark footer { background: #000 !important; color: #fff !important; }
+html.a11y-dark nav *,
+html.a11y-dark header *,
+html.a11y-dark section *,
+html.a11y-dark footer * {
+  background-color: transparent !important;
+  color: #fff !important;
+  border-color: #555 !important;
+}
+html.a11y-dark nav a,
+html.a11y-dark header a,
+html.a11y-dark section a,
+html.a11y-dark footer a,
+html.a11y-dark .accent-word,
+html.a11y-dark .stars,
+html.a11y-dark .phone-big,
+html.a11y-dark .hero-eyebrow,
+html.a11y-dark .stat-num,
+html.a11y-dark .process-num { color: #ffd966 !important; }
+html.a11y-dark img { filter: grayscale(0.3) brightness(0.85); }
+
+html.a11y-links a:not(.btn-primary):not(.btn-ghost):not(.icon-link):not(.wa-btn):not(.a11y-option):not(.a11y-reset):not(.a11y-btn) {
+  text-decoration: underline !important;
+  text-decoration-color: var(--accent) !important;
+  text-underline-offset: 3px;
+}
+
+html.a11y-readable nav *,
+html.a11y-readable header *,
+html.a11y-readable section *,
+html.a11y-readable footer * {
+  font-family: 'Heebo', Arial, sans-serif !important;
+  letter-spacing: 0 !important;
+}
+
+html.a11y-cursor, html.a11y-cursor * {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath d='M4 4 L4 32 L12 24 L18 36 L23 33 L17 22 L28 22 Z' fill='%23000' stroke='%23fff' stroke-width='2'/%3E%3C/svg%3E") 4 4, auto !important;
+}
+
+html.a11y-stop-anim nav *,
+html.a11y-stop-anim header *,
+html.a11y-stop-anim section *,
+html.a11y-stop-anim footer *,
+html.a11y-stop-anim nav *::before,
+html.a11y-stop-anim header *::before,
+html.a11y-stop-anim section *::before,
+html.a11y-stop-anim footer *::before,
+html.a11y-stop-anim nav *::after,
+html.a11y-stop-anim header *::after,
+html.a11y-stop-anim section *::after,
+html.a11y-stop-anim footer *::after {
+  animation: none !important;
+  transition: none !important;
+}
+
+@media (max-width: 480px) {
+  .a11y-panel { width: calc(100vw - 44px); }
+}
+
+/* Per-section decorative backgrounds */
+#about { position: relative; overflow: hidden; }
+#about::before {
+  content: '40';
+  position: absolute;
+  bottom: -40px; left: -20px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 100;
+  font-size: clamp(180px, 22vw, 320px);
+  color: var(--accent);
+  opacity: 0.03;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+  letter-spacing: -4px;
+  z-index: 0;
+}
+#about .container { position: relative; z-index: 1; }
+
+#services { position: relative; overflow: hidden; }
+#services::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent 0px, transparent 59px,
+    rgba(255,255,255,0.025) 59px, rgba(255,255,255,0.025) 60px
+  );
+}
+#services .container { position: relative; z-index: 1; }
+
+#gallery { position: relative; overflow: hidden; }
+#gallery::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent 0px, transparent 22px,
+    rgba(255,255,255,0.022) 22px, rgba(255,255,255,0.022) 23px
+  );
+}
+#gallery .container { position: relative; z-index: 1; }
+
+#testimonials { position: relative; overflow: hidden; }
+#testimonials::before {
+  content: '\201C';
+  position: absolute;
+  top: -20px; left: 20px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 100;
+  font-size: clamp(200px, 26vw, 380px);
+  color: var(--accent);
+  opacity: 0.04;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+}
+#testimonials .container { position: relative; z-index: 1; }
+
+#contact { position: relative; overflow: hidden; }
+#contact::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px; height: 600px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255,255,255,0.04) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+#contact .container { position: relative; z-index: 1; }
+
+/* Mobile hamburger menu */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: 1px solid rgba(240,239,236,0.2);
+  border-radius: 3px;
+  cursor: pointer;
+  padding: 0;
+  z-index: 10001;
+  position: relative;
+}
+.hamburger span {
+  display: block;
+  width: 20px;
+  height: 1.5px;
+  background: var(--accent);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  transform-origin: center;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+.mobile-menu {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 10000;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+.mobile-menu.open { opacity: 1; pointer-events: all; }
+.mobile-nav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  width: 100%;
+}
+.mobile-link {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 200;
+  font-size: clamp(28px, 7vw, 42px);
+  color: var(--text);
+  text-decoration: none;
+  padding: 14px 0;
+  width: 100%;
+  text-align: center;
+  border-bottom: 1px solid var(--divider);
+  letter-spacing: 1px;
+  transition: color 0.2s ease;
+}
+.mobile-link:first-child { border-top: 1px solid var(--divider); }
+.mobile-link:hover { color: var(--accent); }
+.mobile-wa {
+  margin-top: 40px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  padding: 12px 32px;
+  border-radius: 3px;
+  background: var(--accent);
+  color: var(--bg);
+  text-decoration: none;
+  border: 1px solid var(--accent);
+  transition: background 0.2s, color 0.2s;
+}
+
+@media (max-width: 768px) {
+  .hamburger { display: flex; }
+  .mobile-menu { display: flex; }
+  .nav-links { display: none; }
+  .nav-right .btn-primary { display: none; }
+  .nav-right .nav-divider { display: none; }
+  .nav-right { margin-inline-start: auto; margin-inline-end: 14px; gap: 14px; }
+}
+</style>
+</head>
+<body>
+
+<div id="grain"></div>
+
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a class="logo" href="#">
+      <img src="./logo_yoel.jpeg" alt="Yoel S." style="height:52px; width:auto; display:block; filter:invert(1); mix-blend-mode:screen;">
+      <span class="logo-tagline">אומנות השיער</span>
+    </a>
+    <div class="nav-links">
+      <a href="#about" class="nav-link">אודות</a>
+      <span class="nav-dot" aria-hidden="true"></span>
+      <a href="#services" class="nav-link">שירותים</a>
+      <span class="nav-dot" aria-hidden="true"></span>
+      <a href="#gallery" class="nav-link">גלריה</a>
+      <span class="nav-dot" aria-hidden="true"></span>
+      <a href="#contact" class="nav-link">צור קשר</a>
+    </div>
+    <div class="nav-right">
+      <a class="icon-link" href="https://www.instagram.com/yoel_hair?igsh=MW4xeDh3aGJzZDczYg==" target="_blank" rel="noopener" aria-label="Instagram">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="var(--accent)">
+          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
+        </svg>
+      </a>
+      <a class="icon-link" href="https://wa.me/972549448847" target="_blank" rel="noopener" aria-label="WhatsApp">
+        <svg viewBox="0 0 448 512" width="19" height="22" fill="var(--accent)">
+          <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/>
+        </svg>
+      </a>
+      <span class="nav-divider" aria-hidden="true"></span>
+      <a href="https://wa.me/972549448847" target="_blank" rel="noopener" class="btn-primary"><span>לתיאום תור</span></a>
+    </div>
+    <button class="hamburger" aria-label="תפריט" aria-expanded="false">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <nav class="mobile-nav">
+    <a href="#about" class="mobile-link">אודות</a>
+    <a href="#services" class="mobile-link">שירותים</a>
+    <a href="#gallery" class="mobile-link">גלריה</a>
+    <a href="#process" class="mobile-link">התהליך</a>
+    <a href="#testimonials" class="mobile-link">המלצות</a>
+    <a href="#contact" class="mobile-link">צור קשר</a>
+  </nav>
+  <a href="https://wa.me/972549448847" class="mobile-wa" target="_blank" rel="noopener">לתיאום תור בוואטסאפ</a>
+</div>
+
+<header class="hero">
+  <div class="hero-tint"></div>
+  <div class="hero-ghost" aria-hidden="true">40</div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow fade-load" style="font-size: 15px">רחובות · EST. 1987</div>
+    <h1 class="fade-load d1">מעל <span class="accent-word">40</span> שנים<br>של אומנות השיער</h1>
+    <div class="hero-buttons fade-load d3">
+      <a href="https://wa.me/972549448847" target="_blank" rel="noopener" class="btn-primary"><span>לתיאום תור</span></a>
+      <a href="#services" class="btn-ghost">השירותים שלנו</a>
+    </div>
+    <div class="hero-meta fade-load d4">
+      <span>אחד העם 26</span>
+      <span class="hero-meta-dot" aria-hidden="true"></span>
+      <span>רחובות</span>
+      <span class="hero-meta-dot" aria-hidden="true"></span>
+      <span>08-9366555</span>
+    </div>
+  </div>
+</header>
+
+<section id="about">
+  <div class="container">
+    <span class="eyebrow animate-in">אודות</span>
+    <h2 class="section-title animate-in">ידיים שמרגישות שיער</h2>
+    <p class="section-lead animate-in">ברוכים הבאים אל סלון יואל, שם יופי פוגש חדשנות וסגנון מתעורר לחיים! ממוקם בלב רחובות, הסלון שלנו משרת את הקהילה עם שירותי טיפוח שיער יוצאי דופן כבר 40 שנים.</p>
+    <div class="stats">
+      <div class="stat animate-in">
+        <div class="stat-num"><span class="counter" data-target="40">40</span><span class="plus">+</span></div>
+        <div class="stat-label">שנים בתחום</div>
+      </div>
+      <div class="stat animate-in">
+        <div class="stat-num"><span class="counter" data-target="1000">1,000</span><span class="plus">+</span></div>
+        <div class="stat-label">לקוחות</div>
+      </div>
+      <div class="stat animate-in">
+        <div class="stat-num"><span class="counter" data-target="4">4</span><span class="plus">+</span></div>
+        <div class="stat-label">סוגי החלקה</div>
+      </div>
+    </div>
+    <p class="about-text animate-in">בסלון יואל, אנו מאמינים שכל אדם הוא ייחודי וראוי לחוויה מותאמת אישית. המסע שלנו התחיל עם תשוקה לשיער ומחויבות לגרום לאנשים להרגיש במיטבם. נוסדה על ידי יואל סלמה, מעצב שיער ותיק עם מעל 40 שנות ניסיון, בנינו צוות של אנשי מקצוע מוכשרים שחולקים את אותה מסירות למצוינות.</p>
+  </div>
+</section>
+
+<section id="services">
+  <div class="container">
+    <span class="eyebrow animate-in" style="font-size: 1px">שירותים</span>
+    <h2 class="section-title animate-in">השירותים שלנו</h2>
+    <p class="section-lead animate-in">טיפוח שיער מקצועי, התמחות מיוחדת בתלתלים ובצבע ללא אמוניה.</p>
+    <div class="services-grid">
+      <div class="service-card animate-in">
+        <span class="service-index">01 / שירות</span>
+        <h3>התמחות בשיער מתולתל</h3>
+        <p>התמחות בכל סוגי השיער המתולתל. ייעוץ והתאמה אישית של מוצרים וטכניקות לפי מבנה התלתל בשיערך.</p>
+      </div>
+      <div class="service-card animate-in">
+        <span class="service-index">02 / שירות</span>
+        <h3>החלקות שיער</h3>
+        <p>החלקה יפנית, אורגנית ומשקמת — לכל סוג שיער. תוצאה ארוכת טווח עם החומרים האיכותיים ביותר</p>
+      </div>
+      <div class="service-card animate-in">
+        <span class="service-index">03 / שירות</span>
+        <h3>צבע ללא אמוניה</h3>
+        <p>צבעי מונטניבלו ספרדי ומותגי צבעים מובילים נוספים. מתאים לכלל סוגי הקרקפות.</p>
+      </div>
+      <div class="service-card animate-in">
+        <span class="service-index">04 / שירות</span>
+        <h3>איפור, סירוק וליווי כלות</h3>
+        <p>תסרוקות ערב, כלות, אירועים. שירות שלם כולל איפור, מניקור ופדיקור — ניסיון של עשרות שנים.</p>
+      </div>
+      <div class="service-card animate-in">
+        <span class="service-index">05 / שירות</span>
+        <h3>התמחות בהתאמת כל סוגי הגוונים</h3>
+        <p>בליאז', אומברה, גווני שמש, מלאנז' והבהרות — התאמה אישית של הגוון למבנה הפנים, גוון העור וסגנון החיים.</p>
+      </div>
+      <div class="service-card animate-in">
+        <span class="service-index">06 / שירות</span>
+        <h3>מניקור, פדיקור וטיפולי פנים</h3>
+        <p>טיפוח שלם במקום אחד — מניקור ופדיקור מקצועיים, וטיפולי פנים לעור זוהר ובריא. חוויה רגועה ויסודית בכל ביקור.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="gallery">
+  <div class="container">
+    <span class="eyebrow animate-in" style="font-size: 15px">גלריה</span>
+    <h2 class="section-title animate-in">העבודות שלנו</h2>
+    <p class="section-lead animate-in">תלתלים, צבעים, תסרוקות ועוד — מבחר מהמספרה.</p>
+    <div class="gallery-grid">
+      <div class="gallery-slot animate-in"><img src="images/1.png" alt="עבודה של יואל" loading="lazy"></div>
+      <div class="gallery-slot animate-in"><img src="images/2.png" alt="עבודה של יואל" loading="lazy"></div>
+      <div class="gallery-slot animate-in"><img src="images/3.png" alt="עבודה של יואל" loading="lazy"></div>
+      <div class="gallery-slot animate-in"><img src="images/4.png" alt="עבודה של יואל" loading="lazy"></div>
+      <div class="gallery-slot animate-in"><img src="images/5.png" alt="עבודה של יואל" loading="lazy"></div>
+      <div class="gallery-slot animate-in"><img src="images/6.png" alt="עבודה של יואל" loading="lazy"></div>
+    </div>
+    <div class="gallery-grid gallery-more" id="galleryMore" hidden>
+      <div class="gallery-slot"><img src="images/Y1.jpeg" alt="עבודה של יואל" loading="lazy"></div>
+      <div class="gallery-slot"><img src="images/Y2.jpeg" alt="עבודה של יואל" loading="lazy"></div>
+      <div class="gallery-slot"><img src="images/Y3.jpeg" alt="עבודה של יואל" loading="lazy"></div>
+      <div class="gallery-slot"><img src="images/Y4.jpeg" alt="עבודה של יואל" loading="lazy"></div>
+      <div class="gallery-slot"><img src="images/Y5.jpeg" alt="עבודה של יואל" loading="lazy"></div>
+      <div class="gallery-slot"><img src="images/Y6.jpeg" alt="עבודה של יואל" loading="lazy"></div>
+      <div class="gallery-slot"><img src="images/Y7.jpeg" alt="עבודה של יואל" loading="lazy"></div>
+      <div class="gallery-slot"><img src="images/Y8.jpeg" alt="עבודה של יואל" loading="lazy"></div>
+      <div class="gallery-slot"><img src="images/Y9.jpeg" alt="עבודה של יואל" loading="lazy"></div>
+    </div>
+    <div class="gallery-cta">
+      <button class="btn-primary" id="galleryToggle" type="button"><span>הצג עוד תמונות</span></button>
+    </div>
+  </div>
+</section>
+
+<section id="process" class="process">
+  <div class="container">
+    <span class="eyebrow animate-in" style="font-size: 16px">תהליך</span>
+    <h2 class="section-title animate-in">איך עובדים אצלנו</h2>
+    <p class="section-lead animate-in">ייעוץ ישיר, תוצאה שמחזיקה.</p>
+    <div class="process-grid">
+      <div class="process-step animate-in">
+        <div class="process-num">1</div>
+        <h3>ייעוץ אישי</h3>
+        <p>שיחה על השיער, הסגנון והמטרה שלך. הבנה מלאה לפני שמתחילים.</p>
+      </div>
+      <div class="process-step animate-in">
+        <div class="process-num">2</div>
+        <h3>טיפול מקצועי</h3>
+        <p>עם חומרים מהטובים בשוק, ידיים מנוסות, וקשב לכל פרט.</p>
+      </div>
+      <div class="process-step animate-in">
+        <div class="process-num">3</div>
+        <h3>יציאה מושלמת</h3>
+        <p>תוצאה שמחזיקה לאורך זמן ולקוחה מרוצה שחוזרת.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="testimonials">
+  <div class="container">
+    <span class="eyebrow animate-in" style="font-size: 16px">המלצות</span>
+    <h2 class="section-title animate-in">מה לקוחות אומרות</h2>
+    <p class="section-lead animate-in">לקוחות שחוזרות — ומביאות את הבנות שלהן.</p>
+    <div class="testi-grid">
+      <div class="testi animate-in">
+        <div class="stars">★★★★★</div>
+        <p class="testi-text">"לא מוכנה להחליף אותו בחיים — 11 שנים אצל יואל ואני תמיד יוצאת מאושרת."</p>
+        <div class="testi-name">שירה כ. · שכונת רמות</div>
+      </div>
+      <div class="testi animate-in">
+        <div class="stars">★★★★★</div>
+        <p class="testi-text">"ההחלקה יצאה מעבר לציפיות — מחזיקה מעולה. יואל הוא הכי טוב שיש."</p>
+        <div class="testi-name">מיכל ר. · נס ציונה</div>
+      </div>
+      <div class="testi animate-in">
+        <div class="stars">★★★★★</div>
+        <p class="testi-text">"יחס חם ומקצועיות ברמה שלא מוצאים היום — מגיעה מהרצליה בשבילו."</p>
+        <div class="testi-name">דנה ש. · הרצליה</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="container">
+    <span class="eyebrow animate-in" style="font-size: 15px">צור קשר</span>
+    <h2 class="section-title animate-in">לתיאום תור</h2>
+    <p class="section-lead animate-in">תיאום תור בטלפון או בוואטסאפ — מענה תוך שעות ספורות.</p>
+    <div class="contact-grid">
+      <div class="contact-block animate-in">
+        <h3>התקשרי</h3>
+        <a href="tel:08-9366555" class="phone-big">08-9366555</a>
+        <div>
+          <a href="https://wa.me/972549448847" target="_blank" rel="noopener" class="wa-btn">
+            <svg viewBox="0 0 24 24"><path d="M20.5 3.5A10.4 10.4 0 0 0 12 .5 10.5 10.5 0 0 0 2.9 16.6L1.5 22l5.6-1.4a10.5 10.5 0 0 0 4.9 1.3h.1c5.8 0 10.5-4.7 10.5-10.5 0-2.8-1.1-5.4-3.1-7.4zM12 20.1c-1.5 0-3-.4-4.3-1.2l-.3-.2-3.3.9.9-3.2-.2-.3a8.7 8.7 0 1 1 16.1-4.6c0 4.8-3.9 8.6-8.9 8.6zm4.9-6.5c-.3-.1-1.6-.8-1.8-.9-.2-.1-.4-.1-.6.1-.2.3-.7.9-.8 1-.2.2-.3.2-.6.1a7 7 0 0 1-2-1.2 7.7 7.7 0 0 1-1.4-1.8c-.1-.3 0-.4.1-.5l.4-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.8-2c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.4-.2.3-.9.9-.9 2.2 0 1.3.9 2.5 1.1 2.7.1.2 1.9 2.9 4.6 4 .6.3 1.1.4 1.5.6.6.2 1.2.2 1.7.1.5-.1 1.6-.7 1.8-1.3.2-.6.2-1.2.2-1.3-.1-.1-.3-.2-.5-.3z"></path></svg>
+            כתבי לי בוואטסאפ
+          </a>
+        </div>
+        <p class="address-line">אחד העם 26, רחובות</p>
+      </div>
+      <div class="contact-block animate-in">
+        <h3>שעות פעילות</h3>
+        <ul class="hours">
+          <li><span class="day">ראשון</span><span class="time">סגור</span></li>
+          <li><span class="day">שני — חמישי</span><span class="time">08:00 — 17:30</span></li>
+          <li><span class="day">שישי</span><span class="time">08:00 — 13:00</span></li>
+          <li><span class="day">שבת</span><span class="time">סגור</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<button id="a11yBtn" class="a11y-btn" aria-label="תפריט נגישות" aria-expanded="false" aria-controls="a11yPanel">
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <circle cx="12" cy="4.5" r="2"/>
+    <path d="M20 9.5c0-.55-.45-1-1-1h-4.5v-1c0-.55-.45-1-1-1h-3c-.55 0-1 .45-1 1v1H5c-.55 0-1 .45-1 1s.45 1 1 1h4.5v3.5l-2 7c-.18.52.13 1.09.65 1.27.52.18 1.09-.13 1.27-.65l1.6-5.62h1.96l1.6 5.62c.18.52.75.83 1.27.65.52-.18.83-.75.65-1.27l-2-7V10.5H19c.55 0 1-.45 1-1z"/>
+  </svg>
+</button>
+
+<aside id="a11yPanel" class="a11y-panel" role="dialog" aria-label="תפריט נגישות">
+  <h4>תפריט נגישות</h4>
+  <div class="a11y-grid">
+    <button class="a11y-option" data-key="contrast">ניגודיות גבוהה</button>
+    <button class="a11y-option" data-key="dark">מצב כהה</button>
+    <button class="a11y-option" data-key="gray">גווני אפור</button>
+    <button class="a11y-option" data-key="links">הדגש קישורים</button>
+    <button class="a11y-option" data-key="readable">פונט קריא</button>
+    <button class="a11y-option" data-key="cursor">סמן גדול</button>
+  </div>
+  <button id="a11yReset" class="a11y-reset">איפוס הגדרות</button>
+</aside>
+
+<footer>
+  <div>יואל · אומנות השיער · רחובות · © 2026</div>
+  <div class="footer-credit">Built by Bar · <a href="https://wa.me/972542495650" target="_blank" rel="noopener">0542495650</a></div>
+</footer>
+
+<script>
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 20) nav.classList.add('scrolled');
+  else nav.classList.remove('scrolled');
+});
+
+const cardGroups = ['.services-grid', '.testi-grid', '.process-grid', '.stats', '.gallery-grid'];
+cardGroups.forEach(sel => {
+  const parent = document.querySelector(sel);
+  if (!parent) return;
+  Array.from(parent.children).forEach((child, i) => {
+    if (child.classList.contains('animate-in')) child.style.transitionDelay = (i * 0.1) + 's';
+  });
+});
+
+const animateEls = document.querySelectorAll('.animate-in');
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('in-view');
+      io.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12 });
+animateEls.forEach(el => io.observe(el));
+
+const counters = document.querySelectorAll('.counter');
+const counterIO = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    const el = entry.target;
+    const target = parseInt(el.dataset.target, 10);
+    const duration = 1500;
+    const start = performance.now();
+    const step = (now) => {
+      const p = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.floor(eased * target).toLocaleString('he-IL');
+      if (p < 1) requestAnimationFrame(step);
+      else el.textContent = target.toLocaleString('he-IL');
+    };
+    requestAnimationFrame(step);
+    counterIO.unobserve(el);
+  });
+}, { threshold: 0.4 });
+counters.forEach(c => counterIO.observe(c));
+
+/* Gallery expand */
+const galleryToggle = document.getElementById('galleryToggle');
+const galleryMore = document.getElementById('galleryMore');
+if (galleryToggle && galleryMore) {
+  galleryToggle.addEventListener('click', () => {
+    const open = !galleryMore.hidden;
+    if (open) {
+      galleryMore.hidden = true;
+      galleryToggle.querySelector('span').textContent = 'הצג עוד תמונות';
+    } else {
+      galleryMore.hidden = false;
+      galleryToggle.querySelector('span').textContent = 'הסתר תמונות';
+    }
+  });
+}
+
+/* Mobile hamburger menu */
+const hamburger = document.querySelector('.hamburger');
+const mobileMenu = document.getElementById('mobileMenu');
+const mobileLinks = document.querySelectorAll('.mobile-link');
+
+hamburger.addEventListener('click', () => {
+  const isOpen = hamburger.classList.toggle('open');
+  mobileMenu.classList.toggle('open', isOpen);
+  hamburger.setAttribute('aria-expanded', isOpen);
+  document.body.style.overflow = isOpen ? 'hidden' : '';
+});
+
+mobileLinks.forEach(link => {
+  link.addEventListener('click', () => {
+    hamburger.classList.remove('open');
+    mobileMenu.classList.remove('open');
+    hamburger.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  });
+});
+
+/* Accessibility menu */
+(function(){
+  const btn = document.getElementById('a11yBtn');
+  const panel = document.getElementById('a11yPanel');
+  const root = document.documentElement;
+  const STORAGE_KEY = 'yoel_a11y_v1';
+
+  const TOGGLES = {
+    fontLg:   { cls: 'a11y-font-lg', group: 'font' },
+    fontXl:   { cls: 'a11y-font-xl', group: 'font' },
+    contrast: { cls: 'a11y-contrast' },
+    dark:     { cls: 'a11y-dark' },
+    gray:     { cls: 'a11y-grayscale' },
+    links:    { cls: 'a11y-links' },
+    readable: { cls: 'a11y-readable' },
+    cursor:   { cls: 'a11y-cursor' },
+    stopAnim: { cls: 'a11y-stop-anim' }
+  };
+
+  let state = {};
+  try { state = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch(e){}
+
+  function apply() {
+    Object.keys(TOGGLES).forEach(k => {
+      root.classList.toggle(TOGGLES[k].cls, !!state[k]);
+    });
+    document.querySelectorAll('.a11y-option').forEach(o => {
+      o.classList.toggle('active', !!state[o.dataset.key]);
+    });
+  }
+
+  function setKey(key) {
+    const cfg = TOGGLES[key];
+    if (cfg.group) {
+      Object.keys(TOGGLES).forEach(k => {
+        if (k !== key && TOGGLES[k].group === cfg.group) state[k] = false;
+      });
+    }
+    state[key] = !state[key];
+    persist();
+    apply();
+  }
+
+  function persist() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e){}
+  }
+
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    panel.classList.toggle('open');
+    btn.setAttribute('aria-expanded', panel.classList.contains('open'));
+  });
+  document.addEventListener('click', (e) => {
+    if (!panel.contains(e.target) && e.target !== btn) panel.classList.remove('open');
+  });
+  document.querySelectorAll('.a11y-option').forEach(opt => {
+    opt.addEventListener('click', () => setKey(opt.dataset.key));
+  });
+  document.getElementById('a11yReset').addEventListener('click', () => {
+    state = {};
+    persist();
+    apply();
+  });
+
+  apply();
+})();
+</script>
+
+</body>
+</html>
