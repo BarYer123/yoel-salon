@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ניהול גלריה — יואל</title>
+<style>
+:root {
+  --bg: #1f2426;
+  --surface: #2c3234;
+  --border: #3d4548;
+  --text: #e6ebed;
+  --muted: #8a9094;
+  --accent: #d4dbe0;
+  --green: #25D366;
+  --red: #e05555;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; direction: rtl; }
+
+/* Login */
+#loginScreen {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 100vh; padding: 24px;
+}
+.login-box {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+  padding: 40px 36px; width: 100%; max-width: 380px; text-align: center;
+}
+.login-box h1 { font-size: 22px; font-weight: 300; margin-bottom: 8px; }
+.login-box p { color: var(--muted); font-size: 14px; margin-bottom: 28px; }
+.login-box input {
+  width: 100%; padding: 12px 16px; border-radius: 4px;
+  border: 1px solid var(--border); background: var(--bg);
+  color: var(--text); font-size: 16px; margin-bottom: 14px;
+  text-align: center; letter-spacing: 3px;
+}
+.login-box input:focus { outline: none; border-color: var(--accent); }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 12px 28px; border-radius: 4px; border: none; cursor: pointer;
+  font-size: 15px; font-weight: 500; transition: opacity 0.2s;
+}
+.btn:hover { opacity: 0.85; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-primary { background: var(--accent); color: var(--bg); width: 100%; }
+.btn-green { background: var(--green); color: #fff; }
+.btn-danger { background: var(--red); color: #fff; font-size: 13px; padding: 8px 16px; }
+.login-error { color: var(--red); font-size: 13px; margin-top: 10px; min-height: 20px; }
+
+/* Admin */
+#adminScreen { display: none; }
+.top-bar {
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  padding: 16px 24px; display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 10;
+}
+.top-bar h1 { font-size: 18px; font-weight: 300; }
+.top-bar-actions { display: flex; gap: 12px; align-items: center; }
+.main { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+
+/* Upload area */
+.upload-area {
+  border: 2px dashed var(--border); border-radius: 8px;
+  padding: 40px; text-align: center; margin-bottom: 32px;
+  transition: border-color 0.2s, background 0.2s; cursor: pointer;
+}
+.upload-area:hover, .upload-area.drag-over {
+  border-color: var(--accent); background: rgba(212,219,224,0.04);
+}
+.upload-area input { display: none; }
+.upload-icon { font-size: 40px; margin-bottom: 12px; }
+.upload-area h3 { font-size: 16px; font-weight: 400; margin-bottom: 6px; }
+.upload-area p { color: var(--muted); font-size: 13px; }
+.progress-bar {
+  width: 100%; height: 4px; background: var(--border); border-radius: 2px;
+  margin-top: 16px; overflow: hidden; display: none;
+}
+.progress-fill { height: 100%; background: var(--green); width: 0%; transition: width 0.3s; }
+
+/* Gallery grid */
+.section-title {
+  font-size: 14px; color: var(--muted); letter-spacing: 1.5px;
+  text-transform: uppercase; margin-bottom: 16px;
+}
+.gallery-admin {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px;
+}
+.gallery-item {
+  position: relative; aspect-ratio: 1; border-radius: 6px; overflow: hidden;
+  border: 1px solid var(--border); cursor: grab; background: var(--surface);
+}
+.gallery-item img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  transition: opacity 0.2s;
+}
+.gallery-item:hover img { opacity: 0.7; }
+.gallery-item .item-num {
+  position: absolute; top: 6px; right: 8px;
+  background: rgba(0,0,0,0.6); color: #fff; font-size: 11px;
+  padding: 2px 6px; border-radius: 3px;
+}
+.gallery-item .del-btn {
+  position: absolute; top: 6px; left: 6px;
+  width: 28px; height: 28px; border-radius: 50%;
+  background: rgba(224,85,85,0.9); border: none; color: #fff;
+  font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.2s;
+}
+.gallery-item:hover .del-btn { opacity: 1; }
+.gallery-item.dragging { opacity: 0.4; border: 2px dashed var(--accent); }
+.gallery-item.drag-target { border: 2px solid var(--green); }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  background: var(--green); color: #fff; padding: 12px 24px; border-radius: 4px;
+  font-size: 14px; z-index: 1000; opacity: 0; transition: opacity 0.3s;
+  pointer-events: none;
+}
+.toast.err { background: var(--red); }
+.toast.show { opacity: 1; }
+
+/* Divider */
+.divider { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
+
+/* Status */
+.status-bar {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
+  padding: 12px 16px; font-size: 13px; color: var(--muted); margin-bottom: 24px;
+  display: flex; align-items: center; gap: 8px;
+}
+.status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+
+@media (max-width: 600px) {
+  .gallery-admin { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+  .top-bar { padding: 12px 16px; }
+  .main { padding: 20px 16px; }
+}
+</style>
+</head>
+<body>
+
+<div id="loginScreen">
+  <div class="login-box">
+    <div style="font-size:36px;margin-bottom:16px">✂️</div>
+    <h1>יואל - ניהול גלריה</h1>
+    <p>הכנס סיסמה לכניסה לפאנל הניהול</p>
+    <input type="password" id="passwordInput" placeholder="••••••••" autocomplete="current-password">
+    <button class="btn btn-primary" id="loginBtn">כניסה</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
+
+<div id="adminScreen">
+  <div class="top-bar">
+    <h1>✂️ ניהול גלריה</h1>
+    <div class="top-bar-actions">
+      <span style="font-size:13px;color:var(--muted)" id="imageCount"></span>
+      <a href="/" target="_blank" class="btn btn-primary" style="font-size:13px;padding:9px 18px;">צפה באתר ↗</a>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="status-bar">
+      <div class="status-dot"></div>
+      <span>שינויים נשמרים אוטומטית לאתר ומתפרסמים תוך ~30 שניות</span>
+    </div>
+
+    <!-- Upload -->
+    <div class="upload-area" id="uploadArea">
+      <input type="file" id="fileInput" accept="image/*" multiple>
+      <div class="upload-icon">📷</div>
+      <h3>העלאת תמונות חדשות</h3>
+      <p>גרור תמונות לכאן או לחץ לבחירה · JPG, PNG · מקסימום 10MB לתמונה</p>
+      <div class="progress-bar" id="progressBar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- Gallery -->
+    <div class="section-title">תמונות הגלריה — גרור לשינוי סדר · לחץ X למחיקה</div>
+    <div class="gallery-admin" id="galleryGrid"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = '/api/gallery';
+let password = '';
+let images = [];
+let dragSrc = null;
+
+// Login
+document.getElementById('loginBtn').addEventListener('click', login);
+document.getElementById('passwordInput').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+
+async function login() {
+  const pwd = document.getElementById('passwordInput').value.trim();
+  if (!pwd) return;
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true;
+  btn.textContent = 'מתחבר...';
+
+  // Verify password by calling API with a harmless reorder of current list
+  try {
+    const res = await fetch('/gallery.json');
+    const data = await res.json();
+
+    const testRes = await fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pwd, action: 'reorder', images: data.images })
+    });
+
+    if (testRes.status === 401) {
+      document.getElementById('loginError').textContent = 'סיסמה שגויה';
+      btn.disabled = false;
+      btn.textContent = 'כניסה';
+      return;
+    }
+
+    password = pwd;
+    images = data.images;
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminScreen').style.display = 'block';
+    renderGallery();
+  } catch (e) {
+    document.getElementById('loginError').textContent = 'שגיאת חיבור';
+    btn.disabled = false;
+    btn.textContent = 'כניסה';
+  }
+}
+
+// Gallery render
+function renderGallery() {
+  const grid = document.getElementById('galleryGrid');
+  document.getElementById('imageCount').textContent = `${images.length} תמונות`;
+  grid.innerHTML = images.map((src, i) => `
+    <div class="gallery-item" draggable="true" data-index="${i}" data-src="${src}">
+      <img src="/${src}" alt="תמונה ${i+1}" loading="lazy">
+      <div class="item-num">${i < 6 ? '★' : i + 1}</div>
+      <button class="del-btn" title="מחק" onclick="deleteImage('${src}')">×</button>
+    </div>
+  `).join('');
+
+  // Drag & drop
+  grid.querySelectorAll('.gallery-item').forEach(item => {
+    item.addEventListener('dragstart', e => {
+      dragSrc = item;
+      item.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    item.addEventListener('dragend', () => {
+      item.classList.remove('dragging');
+      grid.querySelectorAll('.gallery-item').forEach(i => i.classList.remove('drag-target'));
+    });
+    item.addEventListener('dragover', e => {
+      e.preventDefault();
+      if (item !== dragSrc) {
+        grid.querySelectorAll('.gallery-item').forEach(i => i.classList.remove('drag-target'));
+        item.classList.add('drag-target');
+      }
+    });
+    item.addEventListener('drop', e => {
+      e.preventDefault();
+      if (dragSrc && item !== dragSrc) {
+        const fromIdx = parseInt(dragSrc.dataset.index);
+        const toIdx = parseInt(item.dataset.index);
+        const moved = images.splice(fromIdx, 1)[0];
+        images.splice(toIdx, 0, moved);
+        renderGallery();
+        saveOrder();
+      }
+    });
+  });
+}
+
+async function saveOrder() {
+  try {
+    await fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password, action: 'reorder', images })
+    });
+    showToast('סדר התמונות עודכן ✓');
+  } catch (e) {
+    showToast('שגיאה בשמירה', true);
+  }
+}
+
+async function deleteImage(src) {
+  if (!confirm(`למחוק את התמונה?\n${src}`)) return;
+  try {
+    const res = await fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password, action: 'delete', imagePath: src })
+    });
+    const data = await res.json();
+    if (data.success) {
+      images = data.images;
+      renderGallery();
+      showToast('תמונה נמחקה ✓');
+    }
+  } catch (e) {
+    showToast('שגיאה במחיקה', true);
+  }
+}
+
+// Upload
+const uploadArea = document.getElementById('uploadArea');
+const fileInput = document.getElementById('fileInput');
+
+uploadArea.addEventListener('click', () => fileInput.click());
+uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('drag-over'); });
+uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('drag-over'));
+uploadArea.addEventListener('drop', e => {
+  e.preventDefault();
+  uploadArea.classList.remove('drag-over');
+  handleFiles(Array.from(e.dataTransfer.files));
+});
+fileInput.addEventListener('change', () => handleFiles(Array.from(fileInput.files)));
+
+async function handleFiles(files) {
+  const imageFiles = files.filter(f => f.type.startsWith('image/'));
+  if (!imageFiles.length) return;
+
+  const progressBar = document.getElementById('progressBar');
+  const progressFill = document.getElementById('progressFill');
+  progressBar.style.display = 'block';
+
+  for (let i = 0; i < imageFiles.length; i++) {
+    progressFill.style.width = `${Math.round((i / imageFiles.length) * 100)}%`;
+    await uploadFile(imageFiles[i]);
+  }
+
+  progressFill.style.width = '100%';
+  setTimeout(() => { progressBar.style.display = 'none'; progressFill.style.width = '0%'; }, 800);
+  fileInput.value = '';
+}
+
+async function uploadFile(file) {
+  const compressed = await compressImage(file, 1200, 0.82);
+  const base64 = await toBase64(compressed);
+
+  try {
+    const res = await fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password, action: 'upload', imageData: base64, imageName: file.name })
+    });
+    const data = await res.json();
+    if (data.success) {
+      images = data.images;
+      renderGallery();
+      showToast('תמונה הועלתה ✓');
+    } else {
+      showToast('שגיאה בהעלאה: ' + (data.error || ''), true);
+    }
+  } catch (e) {
+    showToast('שגיאת רשת', true);
+  }
+}
+
+function compressImage(file, maxPx, quality) {
+  return new Promise(resolve => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      let w = img.width, h = img.height;
+      if (w > maxPx || h > maxPx) {
+        if (w > h) { h = Math.round(h * maxPx / w); w = maxPx; }
+        else { w = Math.round(w * maxPx / h); h = maxPx; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      canvas.toBlob(resolve, 'image/jpeg', quality);
+      URL.revokeObjectURL(url);
+    };
+    img.src = url;
+  });
+}
+
+function toBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+function showToast(msg, err = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (err ? ' err' : '') + ' show';
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>

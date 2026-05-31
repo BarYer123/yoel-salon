@@ -1356,30 +1356,10 @@ html.a11y-stop-anim footer *::after {
     <span class="eyebrow animate-in">גלריה</span>
     <h2 class="section-title animate-in">העבודות שלנו</h2>
     <p class="section-lead animate-in">תלתלים, צבעים, תסרוקות ועוד — מבחר מהמספרה.</p>
-    <div class="gallery-grid">
-      <div class="gallery-slot animate-in"><img src="images/1.png" alt="עבודה של יואל" loading="lazy"></div>
-      <div class="gallery-slot animate-in"><img src="images/2.png" alt="עבודה של יואל" loading="lazy"></div>
-      <div class="gallery-slot animate-in"><img src="images/3.png" alt="עבודה של יואל" loading="lazy"></div>
-      <div class="gallery-slot animate-in"><img src="images/4.png" alt="עבודה של יואל" loading="lazy"></div>
-      <div class="gallery-slot animate-in"><img src="images/5.png" alt="עבודה של יואל" loading="lazy"></div>
-      <div class="gallery-slot animate-in"><img src="images/6.png" alt="עבודה של יואל" loading="lazy"></div>
-    </div>
-    <div class="gallery-grid gallery-more" id="galleryMore" hidden>
-      <div class="gallery-slot"><img src="images/Y1.jpeg" alt="עבודה של יואל"></div>
-      <div class="gallery-slot"><img src="images/Y2.jpeg" alt="עבודה של יואל"></div>
-      <div class="gallery-slot"><img src="images/Y3.jpeg" alt="עבודה של יואל"></div>
-      <div class="gallery-slot"><img src="images/Y4.jpeg" alt="עבודה של יואל"></div>
-      <div class="gallery-slot"><img src="images/Y5.jpeg" alt="עבודה של יואל"></div>
-      <div class="gallery-slot"><img src="images/Y6.jpeg" alt="עבודה של יואל"></div>
-      <div class="gallery-slot"><img src="images/Y7.jpeg" alt="עבודה של יואל"></div>
-      <div class="gallery-slot"><img src="images/Y8.jpeg" alt="עבודה של יואל"></div>
-      <div class="gallery-slot"><img src="images/Y9.jpeg" alt="עבודה של יואל"></div>
-      <div class="gallery-slot"><img src="images/Y10.jpeg" alt="עבודה של יואל"></div>
-      <div class="gallery-slot"><img src="images/Y11.jpeg" alt="עבודה של יואל"></div>
-      <div class="gallery-slot"><img src="images/Y12.jpeg" alt="עבודה של יואל"></div>
-    </div>
+    <div class="gallery-grid" id="galleryMain"></div>
+    <div class="gallery-grid gallery-more" id="galleryMore" hidden></div>
     <div class="gallery-cta">
-      <button class="btn-primary" id="galleryToggle" type="button"><span>הצג עוד תמונות</span></button>
+      <button class="btn-primary" id="galleryToggle" type="button" style="display:none"><span>הצג עוד תמונות</span></button>
     </div>
   </div>
 </section>
@@ -1673,21 +1653,44 @@ const counterIO = new IntersectionObserver((entries) => {
 }, { threshold: 0.4 });
 counters.forEach(c => counterIO.observe(c));
 
-/* Gallery expand */
-const galleryToggle = document.getElementById('galleryToggle');
-const galleryMore = document.getElementById('galleryMore');
-if (galleryToggle && galleryMore) {
-  galleryToggle.addEventListener('click', () => {
-    const open = !galleryMore.hidden;
-    if (open) {
-      galleryMore.hidden = true;
-      galleryToggle.querySelector('span').textContent = 'הצג עוד תמונות';
-    } else {
-      galleryMore.hidden = false;
-      galleryToggle.querySelector('span').textContent = 'הסתר תמונות';
+/* Gallery — load from gallery.json */
+(async function() {
+  try {
+    const res = await fetch('/gallery.json?v=' + Date.now());
+    const data = await res.json();
+    const imgs = data.images || [];
+    const main = document.getElementById('galleryMain');
+    const more = document.getElementById('galleryMore');
+    const toggle = document.getElementById('galleryToggle');
+
+    const SHOW = 6;
+    const makeSlot = (src, lazy) => {
+      const div = document.createElement('div');
+      div.className = 'gallery-slot animate-in';
+      const img = document.createElement('img');
+      img.src = '/' + src;
+      img.alt = 'עבודה של יואל';
+      if (lazy) img.loading = 'lazy';
+      div.appendChild(img);
+      return div;
+    };
+
+    imgs.slice(0, SHOW).forEach(src => main.appendChild(makeSlot(src, false)));
+    imgs.slice(SHOW).forEach(src => more.appendChild(makeSlot(src, false)));
+
+    if (imgs.length > SHOW) {
+      toggle.style.display = '';
+      toggle.addEventListener('click', () => {
+        const open = !more.hidden;
+        more.hidden = open;
+        toggle.querySelector('span').textContent = open ? 'הצג עוד תמונות' : 'הסתר תמונות';
+      });
     }
-  });
-}
+
+    // re-observe new elements
+    document.querySelectorAll('#galleryMain .animate-in, #galleryMore .animate-in').forEach(el => io.observe(el));
+  } catch(e) { console.warn('gallery.json load failed', e); }
+})();
 
 /* Mobile hamburger menu */
 const hamburger = document.querySelector('.hamburger');
