@@ -193,6 +193,7 @@ const API = '/api/gallery';
 let password = '';
 let images = [];
 let dragSrc = null;
+let ghToken = null, ghOwner = null, ghRepo = null;
 
 // Login
 document.getElementById('loginBtn').addEventListener('click', login);
@@ -205,23 +206,27 @@ async function login() {
   btn.disabled = true;
   btn.textContent = 'מתחבר...';
 
-  // Verify password by calling API with a harmless reorder of current list
   try {
-    const res = await fetch('https://raw.githubusercontent.com/BarYer123/yoel-salon/main/gallery.json?t=' + Date.now());
-    const data = await res.json();
-
-    const testRes = await fetch(API, {
+    const verifyRes = await fetch(API, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: pwd, action: 'reorder', images: data.images })
+      body: JSON.stringify({ password: pwd, action: 'verify' })
     });
 
-    if (testRes.status === 401) {
+    if (verifyRes.status === 401) {
       document.getElementById('loginError').textContent = 'סיסמה שגויה';
       btn.disabled = false;
       btn.textContent = 'כניסה';
       return;
     }
+
+    const verifyData = await verifyRes.json();
+    ghToken = verifyData.token;
+    ghOwner = verifyData.owner;
+    ghRepo  = verifyData.repo;
+
+    const res = await fetch('https://raw.githubusercontent.com/BarYer123/yoel-salon/main/gallery.json?t=' + Date.now());
+    const data = await res.json();
 
     password = pwd;
     images = data.images;
@@ -344,14 +349,39 @@ async function handleFiles(files) {
 }
 
 async function uploadFile(file) {
-  const compressed = await compressImage(file, 1200, 0.82);
-  const base64 = await toBase64(compressed);
-
   try {
+    const compressed = await compressImage(file, 1200, 0.82);
+    const dataUrl = await toBase64(compressed);
+    const rawBase64 = dataUrl.replace(/^data:image\/[^;]+;base64,/, '');
+
+    const ext = file.name.split('.').pop().toLowerCase() || 'jpg';
+    const filename = `gallery_${Date.now()}.${ext}`;
+    const filePath = `images/${filename}`;
+
+    // 1. Upload image directly from browser to GitHub (bypasses Vercel timeout)
+    const uploadRes = await fetch(`https://api.github.com/repos/${ghOwner}/${ghRepo}/contents/${filePath}`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `token ${ghToken}`,
+        Accept: 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ message: `Upload ${filename}`, content: rawBase64 })
+    });
+
+    const uploadData = await uploadRes.json();
+    if (!uploadData.content) {
+      showToast('שגיאה בהעלאה: ' + (uploadData.message || ''), true);
+      return;
+    }
+
+    const rawUrl = `https://raw.githubusercontent.com/${ghOwner}/${ghRepo}/main/${filePath}`;
+
+    // 2. Update gallery.json via API (tiny payload, fast)
     const res = await fetch(API, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password, action: 'upload', imageData: base64, imageName: file.name })
+      body: JSON.stringify({ password, action: 'add-url', rawUrl })
     });
     const data = await res.json();
     if (data.success) {
@@ -359,10 +389,10 @@ async function uploadFile(file) {
       renderGallery();
       showToast('תמונה הועלתה ✓');
     } else {
-      showToast('שגיאה בהעלאה: ' + (data.error || ''), true);
+      showToast('שגיאה בשמירה: ' + (data.error || ''), true);
     }
   } catch (e) {
-    showToast('שגיאת רשת', true);
+    showToast('שגיאת רשת: ' + e.message, true);
   }
 }
 

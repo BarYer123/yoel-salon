@@ -41,11 +41,10 @@ module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { password, action, images, imageData, imageName, imagePath } = req.body || {};
+  const { password, action, images, rawUrl, imagePath } = req.body || {};
 
   if (!password || password !== process.env.ADMIN_PASSWORD) {
     return res.status(401).json({ error: 'Unauthorized' });
@@ -55,25 +54,17 @@ module.exports = async function handler(req, res) {
   if (!token) return res.status(500).json({ error: 'GITHUB_TOKEN not set' });
 
   try {
-    if (action === 'upload') {
-      const ext = (imageName || 'img.jpg').split('.').pop().toLowerCase() || 'jpg';
-      const filename = `gallery_${Date.now()}.${ext}`;
-      const filePath = `images/${filename}`;
-      const rawBase64 = imageData.replace(/^data:image\/[^;]+;base64,/, '');
+    // verify: return token so browser can upload images directly to GitHub
+    if (action === 'verify') {
+      return res.json({ success: true, token, owner: OWNER, repo: REPO, raw: RAW });
+    }
 
-      const uploadResult = await ghPut(filePath, rawBase64, null, `Upload ${filename}`, token);
-      if (!uploadResult.content) {
-        return res.status(500).json({ error: uploadResult.message || 'Upload failed' });
-      }
-
-      // Use raw.githubusercontent URL — available immediately, no deploy needed
-      const rawUrl = `${RAW}/${filePath}`;
-
+    // add-url: add a raw.githubusercontent URL to gallery (after browser-direct upload)
+    if (action === 'add-url') {
       const { data, sha } = await getGallery(token);
       data.images = [rawUrl, ...data.images];
       await saveGallery(data.images, sha, token);
-
-      return res.json({ success: true, path: rawUrl, images: data.images });
+      return res.json({ success: true, images: data.images });
     }
 
     if (action === 'reorder') {
@@ -96,5 +87,5 @@ module.exports = async function handler(req, res) {
 };
 
 module.exports.config = {
-  api: { bodyParser: { sizeLimit: '8mb' } }
+  api: { bodyParser: { sizeLimit: '1mb' } }
 };
