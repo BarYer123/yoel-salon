@@ -16,5 +16,8 @@
       "destination": "https://yoelsalon.co.il/$1",
       "permanent": true
     }
+  ],
+  "rewrites": [
+    { "source": "/admin", "destination": "/admin.html" }
   ]
 }
