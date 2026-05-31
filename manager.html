@@ -193,7 +193,7 @@ const API = '/api/gallery';
 let password = '';
 let images = [];
 let dragSrc = null;
-let ghToken = null, ghOwner = null, ghRepo = null;
+let ghToken = null, ghOwner = null, ghRepo = null, ghBranch = null, ghDataBranch = null;
 
 // Login
 document.getElementById('loginBtn').addEventListener('click', login);
@@ -221,11 +221,13 @@ async function login() {
     }
 
     const verifyData = await verifyRes.json();
-    ghToken = verifyData.token;
-    ghOwner = verifyData.owner;
-    ghRepo  = verifyData.repo;
+    ghToken     = verifyData.token;
+    ghOwner     = verifyData.owner;
+    ghRepo      = verifyData.repo;
+    ghBranch    = verifyData.branch;
+    ghDataBranch = verifyData.dataBranch;
 
-    const res = await fetch('https://raw.githubusercontent.com/BarYer123/yoel-salon/main/gallery.json?t=' + Date.now());
+    const res = await fetch(`https://raw.githubusercontent.com/${ghOwner}/${ghRepo}/${ghDataBranch}/gallery.json?t=` + Date.now());
     const data = await res.json();
 
     password = pwd;
@@ -357,8 +359,10 @@ async function uploadFile(file) {
     const ext = file.name.split('.').pop().toLowerCase() || 'jpg';
     const filename = `gallery_${Date.now()}.${ext}`;
     const filePath = `images/${filename}`;
+    // strip newlines from base64 (required by GitHub API)
+    const cleanBase64 = rawBase64.replace(/[\r\n]/g, '');
 
-    // 1. Upload image directly from browser to GitHub (bypasses Vercel timeout)
+    // 1. Upload image directly from browser to GitHub main branch
     const uploadRes = await fetch(`https://api.github.com/repos/${ghOwner}/${ghRepo}/contents/${filePath}`, {
       method: 'PUT',
       headers: {
@@ -366,16 +370,16 @@ async function uploadFile(file) {
         Accept: 'application/vnd.github.v3+json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ message: `Upload ${filename}`, content: rawBase64 })
+      body: JSON.stringify({ message: `Upload ${filename}`, content: cleanBase64, branch: ghBranch })
     });
 
-    const uploadData = await uploadRes.json();
-    if (!uploadData.content) {
-      showToast('שגיאה בהעלאה: ' + (uploadData.message || ''), true);
+    if (!uploadRes.ok) {
+      const err = await uploadRes.json().catch(() => ({}));
+      showToast('שגיאה בהעלאה: ' + (err.message || uploadRes.status), true);
       return;
     }
 
-    const rawUrl = `https://raw.githubusercontent.com/${ghOwner}/${ghRepo}/main/${filePath}`;
+    const rawUrl = `https://raw.githubusercontent.com/${ghOwner}/${ghRepo}/${ghBranch}/${filePath}`;
 
     // 2. Update gallery.json via API (tiny payload, fast)
     const res = await fetch(API, {

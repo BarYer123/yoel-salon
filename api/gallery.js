@@ -1,40 +1,38 @@
-const OWNER = 'BarYer123';
-const REPO  = 'yoel-salon';
-const RAW   = `https://raw.githubusercontent.com/${OWNER}/${REPO}/main`;
+const OWNER  = 'BarYer123';
+const REPO   = 'yoel-salon';
+const BRANCH = 'data';   // gallery.json lives here — never triggers Vercel deploy
+const MAIN   = 'main';   // images live here
 
-async function ghGet(path, token) {
-  const r = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}`, {
-    headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' }
-  });
-  return r.json();
-}
-
-async function ghPut(path, base64content, sha, message, token) {
-  const body = { message, content: base64content };
-  if (sha) body.sha = sha;
-  const r = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}`, {
-    method: 'PUT',
+async function gh(method, path, body, token) {
+  const r = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/${path}`, {
+    method,
     headers: {
       Authorization: `token ${token}`,
       Accept: 'application/vnd.github.v3+json',
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify(body)
+    body: body ? JSON.stringify(body) : undefined
   });
   return r.json();
 }
 
 async function getGallery(token) {
-  const file = await ghGet('gallery.json', token);
+  const file = await gh('GET', `contents/gallery.json?ref=${BRANCH}`, null, token);
+  if (!file.content) throw new Error('Cannot read gallery.json: ' + (file.message || ''));
   return {
-    data: JSON.parse(Buffer.from(file.content, 'base64').toString('utf-8')),
+    images: JSON.parse(Buffer.from(file.content.replace(/\s/g, ''), 'base64').toString('utf-8')).images,
     sha: file.sha
   };
 }
 
 async function saveGallery(images, sha, token) {
   const content = Buffer.from(JSON.stringify({ images }, null, 2)).toString('base64');
-  return ghPut('gallery.json', content, sha, 'Update gallery', token);
+  return gh('PUT', 'contents/gallery.json', {
+    message: 'Update gallery',
+    content,
+    sha,
+    branch: BRANCH
+  }, token);
 }
 
 module.exports = async function handler(req, res) {
@@ -54,17 +52,22 @@ module.exports = async function handler(req, res) {
   if (!token) return res.status(500).json({ error: 'GITHUB_TOKEN not set' });
 
   try {
-    // verify: return token so browser can upload images directly to GitHub
     if (action === 'verify') {
-      return res.json({ success: true, token, owner: OWNER, repo: REPO, raw: RAW });
+      return res.json({
+        success: true,
+        token,
+        owner: OWNER,
+        repo: REPO,
+        branch: MAIN,
+        dataBranch: BRANCH
+      });
     }
 
-    // add-url: add a raw.githubusercontent URL to gallery (after browser-direct upload)
     if (action === 'add-url') {
-      const { data, sha } = await getGallery(token);
-      data.images = [rawUrl, ...data.images];
-      await saveGallery(data.images, sha, token);
-      return res.json({ success: true, images: data.images });
+      const { images: current, sha } = await getGallery(token);
+      await saveGallery([rawUrl, ...current], sha, token);
+      const updated = await getGallery(token);
+      return res.json({ success: true, images: updated.images });
     }
 
     if (action === 'reorder') {
@@ -74,13 +77,13 @@ module.exports = async function handler(req, res) {
     }
 
     if (action === 'delete') {
-      const { data, sha } = await getGallery(token);
-      data.images = data.images.filter(i => i !== imagePath);
-      await saveGallery(data.images, sha, token);
-      return res.json({ success: true, images: data.images });
+      const { images: current, sha } = await getGallery(token);
+      await saveGallery(current.filter(i => i !== imagePath), sha, token);
+      const updated = await getGallery(token);
+      return res.json({ success: true, images: updated.images });
     }
 
-    return res.status(400).json({ error: 'Unknown action: ' + action });
+    return res.status(400).json({ error: 'Unknown action' });
   } catch (e) {
     return res.status(500).json({ error: e.message });
   }

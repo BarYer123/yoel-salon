@@ -1656,7 +1656,7 @@ counters.forEach(c => counterIO.observe(c));
 /* Gallery — load from gallery.json */
 (async function() {
   try {
-    const res = await fetch('https://raw.githubusercontent.com/BarYer123/yoel-salon/main/gallery.json?t=' + Date.now());
+    const res = await fetch('https://raw.githubusercontent.com/BarYer123/yoel-salon/data/gallery.json?t=' + Date.now());
     const data = await res.json();
     const imgs = data.images || [];
     const main = document.getElementById('galleryMain');
