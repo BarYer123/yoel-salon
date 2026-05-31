@@ -46,6 +46,12 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color:
 .btn-primary { background: var(--accent); color: var(--bg); width: 100%; }
 .btn-green { background: var(--green); color: #fff; }
 .btn-danger { background: var(--red); color: #fff; font-size: 13px; padding: 8px 16px; }
+.btn-save { background: var(--green); color: #fff; font-size: 13px; padding: 9px 20px; }
+.btn-save:disabled { background: var(--border); color: var(--muted); opacity: 1; cursor: default; }
+.btn-save.dirty { animation: pulse 1.6s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(37,211,102,0.5); } 50% { box-shadow: 0 0 0 6px rgba(37,211,102,0); } }
+.status-bar.dirty { border-color: var(--green); }
+.status-bar.dirty .status-dot { background: #f0b03a; }
 .login-error { color: var(--red); font-size: 13px; margin-top: 10px; min-height: 20px; }
 
 /* Admin */
@@ -157,14 +163,15 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color:
     <h1>✂️ ניהול גלריה</h1>
     <div class="top-bar-actions">
       <span style="font-size:13px;color:var(--muted)" id="imageCount"></span>
+      <button class="btn btn-save" id="saveBtn" disabled>שמור שינויים</button>
       <a href="/" target="_blank" class="btn btn-primary" style="font-size:13px;padding:9px 18px;">צפה באתר ↗</a>
     </div>
   </div>
 
   <div class="main">
-    <div class="status-bar">
+    <div class="status-bar" id="statusBar">
       <div class="status-dot"></div>
-      <span>שינויים נשמרים אוטומטית לאתר ומתפרסמים תוך ~30 שניות</span>
+      <span id="statusText">אין שינויים שלא נשמרו</span>
     </div>
 
     <!-- Upload -->
@@ -181,7 +188,7 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color:
     <hr class="divider">
 
     <!-- Gallery -->
-    <div class="section-title">תמונות הגלריה — גרור לשינוי סדר · לחץ X למחיקה</div>
+    <div class="section-title">תמונות הגלריה — גרור לשינוי סדר · לחץ X למחיקה · השינויים נשמרים בלחיצה על "שמור שינויים"</div>
     <div class="gallery-admin" id="galleryGrid"></div>
   </div>
 </div>
@@ -191,13 +198,37 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color:
 <script>
 const API = '/api/gallery';
 let password = '';
-let images = [];
+let images = [];            // working copy (local, unsaved)
+let savedSnapshot = '';     // JSON of last-saved state
+let dirty = false;
 let dragSrc = null;
 let ghToken = null, ghOwner = null, ghRepo = null, ghUploadBranch = null, ghDataBranch = null;
 
 // Login
 document.getElementById('loginBtn').addEventListener('click', login);
 document.getElementById('passwordInput').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+document.getElementById('saveBtn').addEventListener('click', saveAll);
+
+// Warn before leaving with unsaved changes
+window.addEventListener('beforeunload', e => {
+  if (dirty) { e.preventDefault(); e.returnValue = ''; }
+});
+
+function setDirty(val) {
+  dirty = val;
+  const btn = document.getElementById('saveBtn');
+  const bar = document.getElementById('statusBar');
+  const txt = document.getElementById('statusText');
+  btn.disabled = !val;
+  btn.classList.toggle('dirty', val);
+  bar.classList.toggle('dirty', val);
+  txt.textContent = val ? '● יש שינויים שלא נשמרו — לחץ "שמור שינויים"' : 'הכל שמור ✓';
+}
+
+// call after any local change to images[]
+function changed() {
+  setDirty(JSON.stringify(images) !== savedSnapshot);
+}
 
 async function login() {
   const pwd = document.getElementById('passwordInput').value.trim();
@@ -231,14 +262,44 @@ async function login() {
     const data = await res.json();
 
     password = pwd;
-    images = data.images;
+    images = Array.isArray(data.images) ? data.images : [];
+    savedSnapshot = JSON.stringify(images);
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminScreen').style.display = 'block';
     renderGallery();
+    setDirty(false);
   } catch (e) {
     document.getElementById('loginError').textContent = 'שגיאת חיבור';
     btn.disabled = false;
     btn.textContent = 'כניסה';
+  }
+}
+
+// Save all local changes to gallery.json in one write
+async function saveAll() {
+  const btn = document.getElementById('saveBtn');
+  btn.disabled = true;
+  btn.textContent = 'שומר...';
+  try {
+    const res = await fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password, action: 'reorder', images })
+    });
+    const data = await res.json();
+    if (data.success) {
+      savedSnapshot = JSON.stringify(images);
+      setDirty(false);
+      showToast('כל השינויים נשמרו ✓ (יתעדכן באתר תוך ~5 דקות)');
+    } else {
+      showToast('שגיאה בשמירה: ' + (data.error || ''), true);
+      setDirty(true);
+    }
+  } catch (e) {
+    showToast('שגיאת רשת בשמירה: ' + e.message, true);
+    setDirty(true);
+  } finally {
+    btn.textContent = 'שמור שינויים';
   }
 }
 
@@ -280,42 +341,19 @@ function renderGallery() {
         const moved = images.splice(fromIdx, 1)[0];
         images.splice(toIdx, 0, moved);
         renderGallery();
-        saveOrder();
+        changed();
       }
     });
   });
 }
 
-async function saveOrder() {
-  try {
-    await fetch(API, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password, action: 'reorder', images })
-    });
-    showToast('סדר התמונות עודכן ✓');
-  } catch (e) {
-    showToast('שגיאה בשמירה', true);
-  }
-}
-
-async function deleteImage(src) {
-  if (!confirm(`למחוק את התמונה?\n${src}`)) return;
-  try {
-    const res = await fetch(API, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password, action: 'delete', imagePath: src })
-    });
-    const data = await res.json();
-    if (data.success) {
-      images = data.images;
-      renderGallery();
-      showToast('תמונה נמחקה ✓');
-    }
-  } catch (e) {
-    showToast('שגיאה במחיקה', true);
-  }
+// local delete only — committed on Save
+function deleteImage(src) {
+  const idx = images.indexOf(src);
+  if (idx === -1) return;
+  images.splice(idx, 1);
+  renderGallery();
+  changed();
 }
 
 // Upload
@@ -340,14 +378,17 @@ async function handleFiles(files) {
   const progressFill = document.getElementById('progressFill');
   progressBar.style.display = 'block';
 
+  let ok = 0;
   for (let i = 0; i < imageFiles.length; i++) {
     progressFill.style.width = `${Math.round((i / imageFiles.length) * 100)}%`;
-    await uploadFile(imageFiles[i]);
+    if (await uploadFile(imageFiles[i])) ok++;
   }
 
   progressFill.style.width = '100%';
   setTimeout(() => { progressBar.style.display = 'none'; progressFill.style.width = '0%'; }, 800);
   fileInput.value = '';
+
+  if (ok > 0) showToast(`${ok} תמונות נוספו — לחץ "שמור שינויים" לפרסום`);
 }
 
 async function uploadFile(file) {
@@ -381,22 +422,11 @@ async function uploadFile(file) {
 
     const rawUrl = `https://raw.githubusercontent.com/${ghOwner}/${ghRepo}/${ghUploadBranch}/${filePath}`;
 
-    // 2. Update gallery.json via API (tiny payload, fast)
-    const res = await fetch(API, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password, action: 'add-url', rawUrl })
-    });
-    const data = await res.json();
-    if (data.success) {
-      images = data.images;
-      renderGallery();
-      showToast('תמונה הועלתה ✓');
-      return true;
-    } else {
-      showToast('שגיאה בשמירה: ' + (data.error || ''), true);
-      return false;
-    }
+    // 2. Add to local list (committed to gallery.json on Save)
+    images.unshift(rawUrl);
+    renderGallery();
+    changed();
+    return true;
   } catch (e) {
     showToast('שגיאת רשת: ' + e.message, true);
     return false;
