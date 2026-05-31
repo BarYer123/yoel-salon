@@ -1,5 +1,6 @@
 const OWNER = 'BarYer123';
 const REPO  = 'yoel-salon';
+const RAW   = `https://raw.githubusercontent.com/${OWNER}/${REPO}/main`;
 
 async function ghGet(path, token) {
   const r = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}`, {
@@ -23,10 +24,16 @@ async function ghPut(path, base64content, sha, message, token) {
   return r.json();
 }
 
-async function updateGalleryJson(newImages, token) {
+async function getGallery(token) {
   const file = await ghGet('gallery.json', token);
-  const sha = file.sha;
-  const content = Buffer.from(JSON.stringify({ images: newImages }, null, 2)).toString('base64');
+  return {
+    data: JSON.parse(Buffer.from(file.content, 'base64').toString('utf-8')),
+    sha: file.sha
+  };
+}
+
+async function saveGallery(images, sha, token) {
+  const content = Buffer.from(JSON.stringify({ images }, null, 2)).toString('base64');
   return ghPut('gallery.json', content, sha, 'Update gallery', token);
 }
 
@@ -51,38 +58,35 @@ module.exports = async function handler(req, res) {
     if (action === 'upload') {
       const ext = (imageName || 'img.jpg').split('.').pop().toLowerCase() || 'jpg';
       const filename = `gallery_${Date.now()}.${ext}`;
-      const imgPath = `images/${filename}`;
-
-      // imageData is "data:image/jpeg;base64,XXXXX" — extract raw base64
+      const filePath = `images/${filename}`;
       const rawBase64 = imageData.replace(/^data:image\/[^;]+;base64,/, '');
 
-      const uploadResult = await ghPut(imgPath, rawBase64, null, `Upload ${filename}`, token);
+      const uploadResult = await ghPut(filePath, rawBase64, null, `Upload ${filename}`, token);
       if (!uploadResult.content) {
         return res.status(500).json({ error: uploadResult.message || 'Upload failed' });
       }
 
-      const galleryFile = await ghGet('gallery.json', token);
-      const current = JSON.parse(Buffer.from(galleryFile.content, 'base64').toString('utf-8'));
-      current.images = [imgPath, ...current.images];
+      // Use raw.githubusercontent URL — available immediately, no deploy needed
+      const rawUrl = `${RAW}/${filePath}`;
 
-      const gjContent = Buffer.from(JSON.stringify(current, null, 2)).toString('base64');
-      await ghPut('gallery.json', gjContent, galleryFile.sha, `Add ${filename} to gallery`, token);
+      const { data, sha } = await getGallery(token);
+      data.images = [rawUrl, ...data.images];
+      await saveGallery(data.images, sha, token);
 
-      return res.json({ success: true, path: imgPath, images: current.images });
+      return res.json({ success: true, path: rawUrl, images: data.images });
     }
 
     if (action === 'reorder') {
-      await updateGalleryJson(images, token);
+      const { sha } = await getGallery(token);
+      await saveGallery(images, sha, token);
       return res.json({ success: true });
     }
 
     if (action === 'delete') {
-      const galleryFile = await ghGet('gallery.json', token);
-      const current = JSON.parse(Buffer.from(galleryFile.content, 'base64').toString('utf-8'));
-      current.images = current.images.filter(i => i !== imagePath);
-      const gjContent = Buffer.from(JSON.stringify(current, null, 2)).toString('base64');
-      await ghPut('gallery.json', gjContent, galleryFile.sha, `Remove ${imagePath}`, token);
-      return res.json({ success: true, images: current.images });
+      const { data, sha } = await getGallery(token);
+      data.images = data.images.filter(i => i !== imagePath);
+      await saveGallery(data.images, sha, token);
+      return res.json({ success: true, images: data.images });
     }
 
     return res.status(400).json({ error: 'Unknown action: ' + action });

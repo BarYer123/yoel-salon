@@ -207,7 +207,7 @@ async function login() {
 
   // Verify password by calling API with a harmless reorder of current list
   try {
-    const res = await fetch('/gallery.json');
+    const res = await fetch('https://raw.githubusercontent.com/BarYer123/yoel-salon/main/gallery.json?t=' + Date.now());
     const data = await res.json();
 
     const testRes = await fetch(API, {
@@ -241,7 +241,7 @@ function renderGallery() {
   document.getElementById('imageCount').textContent = `${images.length} תמונות`;
   grid.innerHTML = images.map((src, i) => `
     <div class="gallery-item" draggable="true" data-index="${i}" data-src="${src}">
-      <img src="/${src}" alt="תמונה ${i+1}" loading="lazy">
+      <img src="${src.startsWith('http') ? src : '/' + src}" alt="תמונה ${i+1}" loading="lazy">
       <div class="item-num">${i < 6 ? '★' : i + 1}</div>
       <button class="del-btn" title="מחק" onclick="deleteImage('${src}')">×</button>
     </div>

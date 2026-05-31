@@ -1656,7 +1656,7 @@ counters.forEach(c => counterIO.observe(c));
 /* Gallery — load from gallery.json */
 (async function() {
   try {
-    const res = await fetch('/gallery.json?v=' + Date.now());
+    const res = await fetch('https://raw.githubusercontent.com/BarYer123/yoel-salon/main/gallery.json?t=' + Date.now());
     const data = await res.json();
     const imgs = data.images || [];
     const main = document.getElementById('galleryMain');
@@ -1668,7 +1668,7 @@ counters.forEach(c => counterIO.observe(c));
       const div = document.createElement('div');
       div.className = 'gallery-slot animate-in';
       const img = document.createElement('img');
-      img.src = '/' + src;
+      img.src = src.startsWith('http') ? src : '/' + src;
       img.alt = 'עבודה של יואל';
       if (lazy) img.loading = 'lazy';
       div.appendChild(img);
