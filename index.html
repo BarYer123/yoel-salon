@@ -1675,7 +1675,11 @@ counters.forEach(c => counterIO.observe(c));
       return div;
     };
 
-    imgs.slice(0, SHOW).forEach(src => main.appendChild(makeSlot(src, false)));
+    imgs.slice(0, SHOW).forEach(src => {
+      const slot = makeSlot(src, false);
+      slot.classList.add('in-view'); // immediately visible
+      main.appendChild(slot);
+    });
     imgs.slice(SHOW).forEach(src => more.appendChild(makeSlot(src, false)));
 
     if (imgs.length > SHOW) {
@@ -1683,12 +1687,10 @@ counters.forEach(c => counterIO.observe(c));
       toggle.addEventListener('click', () => {
         const open = !more.hidden;
         more.hidden = open;
+        if (!open) more.querySelectorAll('.animate-in').forEach(el => io.observe(el));
         toggle.querySelector('span').textContent = open ? 'הצג עוד תמונות' : 'הסתר תמונות';
       });
     }
-
-    // re-observe new elements
-    document.querySelectorAll('#galleryMain .animate-in, #galleryMore .animate-in').forEach(el => io.observe(el));
   } catch(e) { console.warn('gallery.json load failed', e); }
 })();
 
