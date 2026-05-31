@@ -1,7 +1,6 @@
 const OWNER  = 'BarYer123';
 const REPO   = 'yoel-salon';
-const BRANCH = 'data';   // gallery.json lives here — never triggers Vercel deploy
-const MAIN   = 'main';   // images live here
+const BRANCH = 'data';   // gallery.json + uploaded images live here — never triggers Vercel deploy
 
 async function gh(method, path, body, token) {
   const r = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/${path}`, {
@@ -58,29 +57,35 @@ module.exports = async function handler(req, res) {
         token,
         owner: OWNER,
         repo: REPO,
-        branch: MAIN,
+        uploadBranch: BRANCH,   // images go to data branch — main stays clean
         dataBranch: BRANCH
       });
     }
 
     if (action === 'add-url') {
+      if (!rawUrl) return res.status(400).json({ error: 'Missing rawUrl' });
       const { images: current, sha } = await getGallery(token);
-      await saveGallery([rawUrl, ...current], sha, token);
-      const updated = await getGallery(token);
-      return res.json({ success: true, images: updated.images });
+      const newImages = [rawUrl, ...current];
+      const r = await saveGallery(newImages, sha, token);
+      if (!r.commit) return res.status(500).json({ error: r.message || 'Save failed' });
+      return res.json({ success: true, images: newImages });
     }
 
     if (action === 'reorder') {
+      if (!Array.isArray(images)) return res.status(400).json({ error: 'Missing images' });
       const { sha } = await getGallery(token);
-      await saveGallery(images, sha, token);
-      return res.json({ success: true });
+      const r = await saveGallery(images, sha, token);
+      if (!r.commit) return res.status(500).json({ error: r.message || 'Save failed' });
+      return res.json({ success: true, images });
     }
 
     if (action === 'delete') {
+      if (!imagePath) return res.status(400).json({ error: 'Missing imagePath' });
       const { images: current, sha } = await getGallery(token);
-      await saveGallery(current.filter(i => i !== imagePath), sha, token);
-      const updated = await getGallery(token);
-      return res.json({ success: true, images: updated.images });
+      const newImages = current.filter(i => i !== imagePath);
+      const r = await saveGallery(newImages, sha, token);
+      if (!r.commit) return res.status(500).json({ error: r.message || 'Save failed' });
+      return res.json({ success: true, images: newImages });
     }
 
     return res.status(400).json({ error: 'Unknown action' });

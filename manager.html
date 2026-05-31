@@ -193,7 +193,7 @@ const API = '/api/gallery';
 let password = '';
 let images = [];
 let dragSrc = null;
-let ghToken = null, ghOwner = null, ghRepo = null, ghBranch = null, ghDataBranch = null;
+let ghToken = null, ghOwner = null, ghRepo = null, ghUploadBranch = null, ghDataBranch = null;
 
 // Login
 document.getElementById('loginBtn').addEventListener('click', login);
@@ -221,11 +221,11 @@ async function login() {
     }
 
     const verifyData = await verifyRes.json();
-    ghToken     = verifyData.token;
-    ghOwner     = verifyData.owner;
-    ghRepo      = verifyData.repo;
-    ghBranch    = verifyData.branch;
-    ghDataBranch = verifyData.dataBranch;
+    ghToken        = verifyData.token;
+    ghOwner        = verifyData.owner;
+    ghRepo         = verifyData.repo;
+    ghUploadBranch = verifyData.uploadBranch;
+    ghDataBranch   = verifyData.dataBranch;
 
     const res = await fetch(`https://raw.githubusercontent.com/${ghOwner}/${ghRepo}/${ghDataBranch}/gallery.json?t=` + Date.now());
     const data = await res.json();
@@ -362,7 +362,7 @@ async function uploadFile(file) {
     // strip newlines from base64 (required by GitHub API)
     const cleanBase64 = rawBase64.replace(/[\r\n]/g, '');
 
-    // 1. Upload image directly from browser to GitHub main branch
+    // 1. Upload image directly from browser to GitHub data branch
     const uploadRes = await fetch(`https://api.github.com/repos/${ghOwner}/${ghRepo}/contents/${filePath}`, {
       method: 'PUT',
       headers: {
@@ -370,16 +370,16 @@ async function uploadFile(file) {
         Accept: 'application/vnd.github.v3+json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ message: `Upload ${filename}`, content: cleanBase64, branch: ghBranch })
+      body: JSON.stringify({ message: `Upload ${filename}`, content: cleanBase64, branch: ghUploadBranch })
     });
 
     if (!uploadRes.ok) {
       const err = await uploadRes.json().catch(() => ({}));
       showToast('שגיאה בהעלאה: ' + (err.message || uploadRes.status), true);
-      return;
+      return false;
     }
 
-    const rawUrl = `https://raw.githubusercontent.com/${ghOwner}/${ghRepo}/${ghBranch}/${filePath}`;
+    const rawUrl = `https://raw.githubusercontent.com/${ghOwner}/${ghRepo}/${ghUploadBranch}/${filePath}`;
 
     // 2. Update gallery.json via API (tiny payload, fast)
     const res = await fetch(API, {
@@ -392,11 +392,14 @@ async function uploadFile(file) {
       images = data.images;
       renderGallery();
       showToast('תמונה הועלתה ✓');
+      return true;
     } else {
       showToast('שגיאה בשמירה: ' + (data.error || ''), true);
+      return false;
     }
   } catch (e) {
     showToast('שגיאת רשת: ' + e.message, true);
+    return false;
   }
 }
 
@@ -404,17 +407,33 @@ function compressImage(file, maxPx, quality) {
   return new Promise(resolve => {
     const img = new Image();
     const url = URL.createObjectURL(file);
+    // safety timeout — never hang forever (e.g. unsupported HEIC on some browsers)
+    const timer = setTimeout(() => { URL.revokeObjectURL(url); resolve(file); }, 15000);
+
     img.onload = () => {
-      let w = img.width, h = img.height;
-      if (w > maxPx || h > maxPx) {
-        if (w > h) { h = Math.round(h * maxPx / w); w = maxPx; }
-        else { w = Math.round(w * maxPx / h); h = maxPx; }
+      clearTimeout(timer);
+      try {
+        let w = img.width, h = img.height;
+        if (w > maxPx || h > maxPx) {
+          if (w > h) { h = Math.round(h * maxPx / w); w = maxPx; }
+          else { w = Math.round(w * maxPx / h); h = maxPx; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        canvas.toBlob(blob => {
+          URL.revokeObjectURL(url);
+          resolve(blob || file); // fall back to original if toBlob fails
+        }, 'image/jpeg', quality);
+      } catch (e) {
+        URL.revokeObjectURL(url);
+        resolve(file); // fall back to original file
       }
-      const canvas = document.createElement('canvas');
-      canvas.width = w; canvas.height = h;
-      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-      canvas.toBlob(resolve, 'image/jpeg', quality);
+    };
+    img.onerror = () => {
+      clearTimeout(timer);
       URL.revokeObjectURL(url);
+      resolve(file); // unsupported format — upload original, GitHub handles it
     };
     img.src = url;
   });
