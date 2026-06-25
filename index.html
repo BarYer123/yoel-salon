@@ -767,6 +767,71 @@ footer {
 .testi-date { font-family: 'Heebo', sans-serif; font-weight: 300; font-size: 12px; color: var(--muted); }
 .testi-location { font-size: 12px; color: var(--muted); font-family: 'Heebo', sans-serif; margin-top: 12px; letter-spacing: 0.5px; }
 
+/* Testimonials carousel */
+.testi-carousel { position: relative; }
+.testi-track {
+  display: flex;
+  gap: 22px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 4px 2px 10px;
+}
+.testi-track::-webkit-scrollbar { display: none; }
+.testi-track .testi {
+  flex: 0 0 calc((100% - 44px) / 3);
+  scroll-snap-align: center;
+  margin: 0;
+}
+.testi-arrow {
+  position: absolute;
+  top: 42%;
+  transform: translateY(-50%);
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--surface-2);
+  color: var(--accent);
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 3;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+}
+.testi-arrow:hover { background: var(--accent); color: var(--bg); }
+.testi-arrow.prev { right: -12px; }
+.testi-arrow.next { left: -12px; }
+.testi-dots { display: flex; justify-content: center; gap: 8px; margin-top: 28px; }
+.testi-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: width 0.25s ease, background 0.25s ease, border-radius 0.25s ease;
+}
+.testi-dot.active { background: var(--accent); width: 22px; border-radius: 4px; }
+.testi-gbadge {
+  display: flex; align-items: center; justify-content: center;
+  gap: 10px;
+  margin: 0 auto 40px;
+  font-family: 'Heebo', sans-serif;
+  font-weight: 300;
+  font-size: 14px;
+  color: var(--muted);
+}
+.testi-gbadge a { color: var(--accent); text-decoration: none; }
+.testi-gbadge a:hover { text-decoration: underline; }
+.testi-gbadge .g-stars { color: #f0b03a; letter-spacing: 2px; font-size: 15px; }
+@media (max-width: 760px) {
+  .testi-track .testi { flex: 0 0 86%; }
+  .testi-arrow { display: none; }
+}
+
 /* Mobile */
 @media (max-width: 760px) {
   .hero {
@@ -1476,40 +1541,104 @@ html.a11y-stop-anim footer *::after {
     <span class="eyebrow animate-in">המלצות</span>
     <h2 class="section-title animate-in">מה לקוחות אומרות</h2>
     <p class="section-lead animate-in">לקוחות שחוזרות — ומביאות את הבנות שלהן.</p>
-    <div class="testi-grid">
-      <div class="testi animate-in" style="transition-delay: 0s;">
-        <div class="testi-header">
-          <div class="testi-avatar" style="--av-color: #4285f4;">ל</div>
-          <div class="testi-meta">
-            <div class="testi-name-row">לקוחה נאמנה</div>
-            <div class="testi-date">via טופר</div>
+    <div class="testi-gbadge animate-in">
+      <span class="g-stars">★★★★★</span>
+      <span>דירוג מעולה בגוגל · <a href="https://www.google.com/maps?cid=16192083150052707983" target="_blank" rel="noopener">קראו את כל הביקורות ›</a></span>
+    </div>
+    <div class="testi-carousel">
+      <button class="testi-arrow prev" id="testiPrev" type="button" aria-label="הקודם">›</button>
+      <div class="testi-track" id="testiTrack">
+        <div class="testi">
+          <div class="testi-header">
+            <div class="testi-avatar" style="--av-color: #4285f4;">ל</div>
+            <div class="testi-meta">
+              <div class="testi-name-row">לקוחה נאמנה</div>
+              <div class="testi-date">via טופר</div>
+            </div>
           </div>
+          <div class="stars">★★★★★</div>
+          <p class="testi-text">"11 שנה אני כבר מסתפרת אצל יואל ואני מאוד מרוצה ממנו, לא מוכנה להחליף. נינוחות, מקצועיות, יצירתיות ובעיקר הקשבה והתאמה מושלמת."</p>
         </div>
-        <div class="stars">★★★★★</div>
-        <p class="testi-text">"11 שנה אני כבר מסתפרת אצל יואל ואני מאוד מרוצה ממנו, לא מוכנה להחליף. נינוחות, מקצועיות, יצירתיות ובעיקר הקשבה והתאמה מושלמת."</p>
-      </div>
-      <div class="testi animate-in" style="transition-delay: 0.1s;">
-        <div class="testi-header">
-          <div class="testi-avatar" style="--av-color: #ea4335;">ל</div>
-          <div class="testi-meta">
-            <div class="testi-name-row">לקוחה</div>
-            <div class="testi-date">via Easy</div>
+        <div class="testi">
+          <div class="testi-header">
+            <div class="testi-avatar" style="--av-color: #ea4335;">ל</div>
+            <div class="testi-meta">
+              <div class="testi-name-row">לקוחה</div>
+              <div class="testi-date">via Easy</div>
+            </div>
           </div>
+          <div class="stars">★★★★★</div>
+          <p class="testi-text">"טוב אז היום הגעתי ליואל אחרי שלא נכנסתי למספרה במשך 10 שנים. כבר משיחת הטלפון הרגשתי שאני בידיים טובות. קיבלתי יחס מהמם, יואל ואני התייעצנו מה לעשות והוא נתן את דעתו וזרמתי. יצא מהמם! חוויה בלתי נשכחת!"</p>
         </div>
-        <div class="stars">★★★★★</div>
-        <p class="testi-text">"טוב אז היום הגעתי ליואל אחרי שלא נכנסתי למספרה במשך 10 שנים. כבר משיחת הטלפון הרגשתי שאני בידיים טובות. קיבלתי יחס מהמם, יואל ואני התייעצנו מה לעשות והוא נתן את דעתו וזרמתי. יצא מהמם! הייתה לי חוויה בלתי נשכחת ואני מודה על זה!"</p>
-      </div>
-      <div class="testi animate-in" style="transition-delay: 0.2s;">
-        <div class="testi-header">
-          <div class="testi-avatar" style="--av-color: #0f9d58;">ל</div>
-          <div class="testi-meta">
-            <div class="testi-name-row">לקוחה</div>
-            <div class="testi-date">via טופר</div>
+        <div class="testi">
+          <div class="testi-header">
+            <div class="testi-avatar" style="--av-color: #0f9d58;">ל</div>
+            <div class="testi-meta">
+              <div class="testi-name-row">לקוחה</div>
+              <div class="testi-date">via טופר</div>
+            </div>
           </div>
+          <div class="stars">★★★★★</div>
+          <p class="testi-text">"יואל מדהים ומקסים. הגענו אליו במקרה, הוא קיבל מהרגע להרגע את אחי על הרצף האוטיסטי — היה קשוב, מקצועי ורגיש. עשה לו תסרוקת שמחמיאה לו ובמהירות מדהימה, והוסיף שמפו מתנה ולא הסכים לקחת כסף. ממליצה בחום"</p>
         </div>
-        <div class="stars">★★★★★</div>
-        <p class="testi-text">"יואל מדהים ומקסים. הגענו אליו במקרה, הוא קיבל מהרגע להרגע את אחי על הרצף האוטיסטי — היה קשוב, מקצועי ורגיש. עשה לו תסרוקת שמחמיאה לו ובמהירות מדהימה, והוסיף שמפו מתנה ולא הסכים לקחת כסף. ממליצה בחום"</p>
+        <div class="testi">
+          <div class="testi-header">
+            <div class="testi-avatar" style="--av-color: #f0b03a;">K</div>
+            <div class="testi-meta">
+              <div class="testi-name-row">Keren R.</div>
+              <div class="testi-date">Google</div>
+            </div>
+          </div>
+          <div class="stars">★★★★★</div>
+          <p class="testi-text">"הספר האחד והיחיד! ובכלל כל הצוות — מקצועיים, נעימים, וכל פעם יוצאת מרוצה."</p>
+        </div>
+        <div class="testi">
+          <div class="testi-header">
+            <div class="testi-avatar" style="--av-color: #4285f4;">K</div>
+            <div class="testi-meta">
+              <div class="testi-name-row">Karen R.</div>
+              <div class="testi-date">Google</div>
+            </div>
+          </div>
+          <div class="stars">★★★★★</div>
+          <p class="testi-text" dir="ltr" style="text-align:right;">"My best choice for hair cut and hair styling. Very quiet, professional and always with a smile."</p>
+        </div>
+        <div class="testi">
+          <div class="testi-header">
+            <div class="testi-avatar" style="--av-color: #ea4335;">מ</div>
+            <div class="testi-meta">
+              <div class="testi-name-row">M.Y.</div>
+              <div class="testi-date">Google</div>
+            </div>
+          </div>
+          <div class="stars">★★★★★</div>
+          <p class="testi-text">"נחמדים ומקצועיים. טיפול אישי ונעים, אווירה נעימה, קצת מוסיקה ברקע, קפה מצוין. תודה ליואל ודיאנה."</p>
+        </div>
+        <div class="testi">
+          <div class="testi-header">
+            <div class="testi-avatar" style="--av-color: #0f9d58;">J</div>
+            <div class="testi-meta">
+              <div class="testi-name-row">Johnny M.</div>
+              <div class="testi-date">Google</div>
+            </div>
+          </div>
+          <div class="stars">★★★★★</div>
+          <p class="testi-text">"הייתי שנים הולך לספרי גברים רגילים ולא אהבתי את התספורת, ומאז שהתחלתי ללכת ליואל אני יוצא שמח כל פעם! מעצב השיער הכי מקצועי שאני מכיר, ממליץ בחום."</p>
+        </div>
+        <div class="testi">
+          <div class="testi-header">
+            <div class="testi-avatar" style="--av-color: #f0b03a;">C</div>
+            <div class="testi-meta">
+              <div class="testi-name-row">Carmel F.</div>
+              <div class="testi-date">Google</div>
+            </div>
+          </div>
+          <div class="stars">★★★★★</div>
+          <p class="testi-text">"צוות מאוד נחמד ואדיב, יואל מאוד מקצועי. אני אצלו כבר יותר מ-4 שנים ואף פעם לא מתאכזב."</p>
+        </div>
       </div>
+      <button class="testi-arrow next" id="testiNext" type="button" aria-label="הבא">‹</button>
+      <div class="testi-dots" id="testiDots"></div>
     </div>
   </div>
 </section>
@@ -1692,6 +1821,66 @@ counters.forEach(c => counterIO.observe(c));
       });
     }
   } catch(e) { console.warn('gallery.json load failed', e); }
+})();
+
+/* Testimonials carousel */
+(function(){
+  const track = document.getElementById('testiTrack');
+  if (!track) return;
+  const cards = Array.from(track.children);
+  const dotsWrap = document.getElementById('testiDots');
+  const prev = document.getElementById('testiPrev');
+  const next = document.getElementById('testiNext');
+  let current = 0;
+  let autoTimer = null;
+
+  // build dots
+  cards.forEach((_, i) => {
+    const d = document.createElement('button');
+    d.className = 'testi-dot' + (i === 0 ? ' active' : '');
+    d.setAttribute('aria-label', 'ביקורת ' + (i + 1));
+    d.addEventListener('click', () => goTo(i));
+    dotsWrap.appendChild(d);
+  });
+  const dots = Array.from(dotsWrap.children);
+
+  function setActive(i) {
+    current = i;
+    dots.forEach((d, j) => d.classList.toggle('active', j === i));
+  }
+
+  function goTo(i) {
+    i = (i + cards.length) % cards.length;
+    cards[i].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    setActive(i);
+  }
+
+  prev.addEventListener('click', () => { goTo(current - 1); resetAuto(); });
+  next.addEventListener('click', () => { goTo(current + 1); resetAuto(); });
+
+  // keep dots in sync with manual swipe/scroll
+  let scrollT;
+  track.addEventListener('scroll', () => {
+    clearTimeout(scrollT);
+    scrollT = setTimeout(() => {
+      const mid = track.scrollLeft + track.clientWidth / 2;
+      let best = 0, bestDist = Infinity;
+      cards.forEach((c, i) => {
+        const dist = Math.abs((c.offsetLeft + c.offsetWidth / 2) - mid);
+        if (dist < bestDist) { bestDist = dist; best = i; }
+      });
+      setActive(best);
+    }, 120);
+  });
+
+  function resetAuto() {
+    clearInterval(autoTimer);
+    autoTimer = setInterval(() => goTo(current + 1), 5500);
+  }
+  track.addEventListener('mouseenter', () => clearInterval(autoTimer));
+  track.addEventListener('mouseleave', resetAuto);
+  track.addEventListener('touchstart', () => clearInterval(autoTimer), { passive: true });
+  resetAuto();
 })();
 
 /* Mobile hamburger menu */
