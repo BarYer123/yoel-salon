@@ -502,6 +502,104 @@ section { padding: 110px 0; position: relative; }
   letter-spacing: 1px;
 }
 
+/* Reels — video strip (click to play) */
+#reels { background: var(--bg); position: relative; overflow: hidden; }
+#reels::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent 0px, transparent 22px,
+    rgba(255,255,255,0.022) 22px, rgba(255,255,255,0.022) 23px
+  );
+}
+#reels .container { position: relative; z-index: 1; }
+.reels-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  max-width: 660px;
+  margin: 0 auto;
+}
+.reel-item { margin: 0; }
+.reel {
+  position: relative;
+  aspect-ratio: 9 / 16;
+  border-radius: 2px;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--surface) 0%, var(--surface-2) 100%);
+}
+.reel video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.reel-cover {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.35s ease;
+}
+.reel-cover::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(31,36,38,0.12) 0%, rgba(31,36,38,0.55) 100%);
+  transition: background 0.4s ease;
+}
+.reel-cover:hover::before,
+.reel-cover:focus-visible::before {
+  background: linear-gradient(180deg, rgba(31,36,38,0.04) 0%, rgba(31,36,38,0.38) 100%);
+}
+.reel-play {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 1px solid rgba(230,235,237,0.5);
+  background: rgba(31,36,38,0.32);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.35s ease, background 0.35s ease, border-color 0.35s ease;
+}
+.reel-cover:hover .reel-play,
+.reel-cover:focus-visible .reel-play {
+  transform: scale(1.07);
+  background: rgba(31,36,38,0.5);
+  border-color: var(--accent-hover);
+}
+.reel-play svg {
+  width: 19px;
+  height: 19px;
+  fill: var(--text);
+  margin-left: 3px;
+}
+.reel.is-playing .reel-cover { opacity: 0; pointer-events: none; }
+.reel-cap {
+  font-family: 'Heebo', sans-serif;
+  font-weight: 300;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 14px;
+}
+
 /* Process */
 .process {
   background:
@@ -869,6 +967,8 @@ footer {
   .services-grid, .testi-grid, .contact-grid { grid-template-columns: 1fr; gap: 16px; }
   .contact-grid { gap: 48px; }
   .gallery-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .reels-grid { grid-template-columns: 1fr; max-width: 320px; gap: 16px; }
+  .reel-play { width: 54px; height: 54px; }
 
   .process-grid { grid-template-columns: 1fr; gap: 36px; }
   .process-grid::before { display: none; }
@@ -1429,6 +1529,34 @@ html.a11y-stop-anim footer *::after {
   </div>
 </section>
 
+<section id="reels">
+  <div class="container">
+    <span class="eyebrow animate-in">וידאו</span>
+    <h2 class="section-title animate-in">רגע מהמספרה</h2>
+    <p class="section-lead animate-in">שני רגעים קצרים מתוך יום עבודה בסלון. לחצו להפעלה.</p>
+    <div class="reels-grid">
+      <figure class="reel-item animate-in">
+        <div class="reel">
+          <video src="./videos/reel-1.mp4" poster="./videos/reel-1.jpg" preload="none" playsinline></video>
+          <button class="reel-cover" type="button" aria-label="הפעלת סרטון ראשון מהמספרה">
+            <span class="reel-play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
+          </button>
+        </div>
+        <figcaption class="reel-cap">צבע וגוונים · עבודה בסלון</figcaption>
+      </figure>
+      <figure class="reel-item animate-in">
+        <div class="reel">
+          <video src="./videos/reel-2.mp4" poster="./videos/reel-2.jpg" preload="none" playsinline></video>
+          <button class="reel-cover" type="button" aria-label="הפעלת סרטון שני מהמספרה">
+            <span class="reel-play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
+          </button>
+        </div>
+        <figcaption class="reel-cap">לפני ואחרי · בליאז' ארוך</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
 <section id="services">
   <div class="container">
     <span class="eyebrow animate-in">שירותים</span>
@@ -1849,9 +1977,17 @@ counters.forEach(c => counterIO.observe(c));
     dots.forEach((d, j) => d.classList.toggle('active', j === i));
   }
 
+  // Scroll the track only - scrollIntoView() also scrolls the page and yanks
+  // the visitor down to the reviews. Rect math works in RTL and LTR alike.
+  function centerOffset(i) {
+    const t = track.getBoundingClientRect();
+    const c = cards[i].getBoundingClientRect();
+    return (c.left + c.width / 2) - (t.left + t.width / 2);
+  }
+
   function goTo(i) {
     i = (i + cards.length) % cards.length;
-    cards[i].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    track.scrollBy({ left: centerOffset(i), behavior: 'smooth' });
     setActive(i);
   }
 
@@ -1863,24 +1999,41 @@ counters.forEach(c => counterIO.observe(c));
   track.addEventListener('scroll', () => {
     clearTimeout(scrollT);
     scrollT = setTimeout(() => {
-      const mid = track.scrollLeft + track.clientWidth / 2;
       let best = 0, bestDist = Infinity;
-      cards.forEach((c, i) => {
-        const dist = Math.abs((c.offsetLeft + c.offsetWidth / 2) - mid);
+      cards.forEach((_, i) => {
+        const dist = Math.abs(centerOffset(i));
         if (dist < bestDist) { bestDist = dist; best = i; }
       });
       setActive(best);
     }, 120);
   });
 
+  // Only run while the section is actually on screen and the tab is in front
+  let inView = false;
+
+  function stopAuto() { clearInterval(autoTimer); autoTimer = null; }
+
   function resetAuto() {
-    clearInterval(autoTimer);
+    stopAuto();
+    if (!inView || document.hidden) return;
     autoTimer = setInterval(() => goTo(current + 1), 5500);
   }
-  track.addEventListener('mouseenter', () => clearInterval(autoTimer));
+
+  track.addEventListener('mouseenter', stopAuto);
   track.addEventListener('mouseleave', resetAuto);
-  track.addEventListener('touchstart', () => clearInterval(autoTimer), { passive: true });
-  resetAuto();
+  track.addEventListener('touchstart', stopAuto, { passive: true });
+  document.addEventListener('visibilitychange', resetAuto);
+
+  const section = document.getElementById('testimonials');
+  if (window.IntersectionObserver && section) {
+    new IntersectionObserver((entries) => {
+      inView = entries[0].isIntersecting;
+      resetAuto();
+    }, { threshold: 0.25 }).observe(section);
+  } else {
+    inView = true;
+    resetAuto();
+  }
 })();
 
 /* Mobile hamburger menu */
@@ -1988,6 +2141,65 @@ openBtn.addEventListener('click', openModal);
 closeBtn.addEventListener('click', closeModal);
 a11yModal.addEventListener('click', (e) => { if (e.target === a11yModal) closeModal(); });
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && a11yModal.classList.contains('open')) closeModal(); });
+
+// Reels: click to play, one at a time, nothing loads until clicked
+(function () {
+  const section = document.getElementById('reels');
+  if (!section) return;
+  const reels = Array.prototype.slice.call(section.querySelectorAll('.reel'));
+  const videos = [];
+
+  function reset(reel) {
+    const v = reel.querySelector('video');
+    reel.classList.remove('is-playing');
+    if (v) { v.controls = false; v.currentTime = 0; }
+  }
+
+  function hideIfEmpty() {
+    if (!section.querySelector('.reel-item:not([hidden])')) section.hidden = true;
+  }
+
+  function probe(src, onMissing) {
+    if (!src || !window.fetch) return;
+    fetch(src, { method: 'HEAD' })
+      .then(function (res) { if (!res.ok) onMissing(); })
+      .catch(onMissing);
+  }
+
+  reels.forEach(function (reel) {
+    const video = reel.querySelector('video');
+    const cover = reel.querySelector('.reel-cover');
+    if (!video || !cover) return;
+    videos.push(video);
+
+    function drop() {
+      const item = reel.closest('.reel-item');
+      if (item) item.hidden = true;
+      hideIfEmpty();
+    }
+
+    video.addEventListener('error', drop);
+
+    // Probe the file without downloading it, so a missing clip never shows a dead card
+    probe(video.getAttribute('src'), drop);
+
+    cover.addEventListener('click', function () {
+      reels.forEach(function (other) {
+        if (other === reel) return;
+        const ov = other.querySelector('video');
+        if (ov) ov.pause();
+        reset(other);
+      });
+      video.controls = true;
+      reel.classList.add('is-playing');
+      const p = video.play();
+      if (p && p.catch) p.catch(function () { reset(reel); });
+    });
+
+    video.addEventListener('ended', function () { reset(reel); });
+  });
+})();
+
 </script>
 
 </body>
