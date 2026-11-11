@@ -483,6 +483,7 @@ section { padding: 110px 0; position: relative; }
 }
 .gallery-slot { aspect-ratio: 1; border-radius: 2px; overflow: hidden; }
 .gallery-slot img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+.gallery-slot video { width: 100%; height: 100%; object-fit: contain; display: block; background: #171717; }
 .gallery-slot:hover img { transform: scale(1.04); }
 .gallery-more { margin-top: 12px; }
 .gallery-grid[hidden] { display: none; }
@@ -1524,7 +1525,7 @@ html.a11y-stop-anim footer *::after {
     <div class="gallery-grid" id="galleryMain"></div>
     <div class="gallery-grid gallery-more" id="galleryMore" hidden></div>
     <div class="gallery-cta">
-      <button class="btn-primary" id="galleryToggle" type="button" style="display:none"><span>הצג עוד תמונות</span></button>
+      <button class="btn-primary" id="galleryToggle" type="button" style="display:none"><span>הצג עוד עבודות</span></button>
     </div>
   </div>
 </section>
@@ -1915,7 +1916,7 @@ counters.forEach(c => counterIO.observe(c));
   try {
     const res = await fetch('https://raw.githubusercontent.com/BarYer123/yoel-salon/data/gallery.json?t=' + Date.now());
     const data = await res.json();
-    const imgs = data.images || [];
+    const items = Array.isArray(data.images) ? data.images : [];
     const main = document.getElementById('galleryMain');
     const more = document.getElementById('galleryMore');
     const toggle = document.getElementById('galleryToggle');
@@ -1924,28 +1925,39 @@ counters.forEach(c => counterIO.observe(c));
     const makeSlot = (src, lazy) => {
       const div = document.createElement('div');
       div.className = 'gallery-slot animate-in';
-      const img = document.createElement('img');
-      img.src = src.startsWith('http') ? src : '/' + src;
-      img.alt = 'עבודה של יואל';
-      if (lazy) img.loading = 'lazy';
-      div.appendChild(img);
+      const url = src.startsWith('http') ? src : '/' + src;
+      if (/\.mp4(?:[?#]|$)/i.test(src)) {
+        const video = document.createElement('video');
+        video.src = url;
+        video.controls = true;
+        video.playsInline = true;
+        video.preload = 'metadata';
+        video.setAttribute('aria-label', 'סרטון מעבודות המספרה');
+        div.appendChild(video);
+      } else {
+        const img = document.createElement('img');
+        img.src = url;
+        img.alt = 'עבודה של יואל';
+        if (lazy) img.loading = 'lazy';
+        div.appendChild(img);
+      }
       return div;
     };
 
-    imgs.slice(0, SHOW).forEach(src => {
+    items.slice(0, SHOW).forEach(src => {
       const slot = makeSlot(src, false);
       slot.classList.add('in-view'); // immediately visible
       main.appendChild(slot);
     });
-    imgs.slice(SHOW).forEach(src => more.appendChild(makeSlot(src, false)));
+    items.slice(SHOW).forEach(src => more.appendChild(makeSlot(src, false)));
 
-    if (imgs.length > SHOW) {
+    if (items.length > SHOW) {
       toggle.style.display = '';
       toggle.addEventListener('click', () => {
         const open = !more.hidden;
         more.hidden = open;
         if (!open) more.querySelectorAll('.animate-in').forEach(el => io.observe(el));
-        toggle.querySelector('span').textContent = open ? 'הצג עוד תמונות' : 'הסתר תמונות';
+        toggle.querySelector('span').textContent = open ? 'הצג עוד עבודות' : 'הסתר עבודות';
       });
     }
   } catch(e) { console.warn('gallery.json load failed', e); }
@@ -1960,7 +1972,6 @@ counters.forEach(c => counterIO.observe(c));
   const prev = document.getElementById('testiPrev');
   const next = document.getElementById('testiNext');
   let current = 0;
-  let autoTimer = null;
 
   // build dots
   cards.forEach((_, i) => {
@@ -1991,8 +2002,8 @@ counters.forEach(c => counterIO.observe(c));
     setActive(i);
   }
 
-  prev.addEventListener('click', () => { goTo(current - 1); resetAuto(); });
-  next.addEventListener('click', () => { goTo(current + 1); resetAuto(); });
+  prev.addEventListener('click', () => goTo(current - 1));
+  next.addEventListener('click', () => goTo(current + 1));
 
   // keep dots in sync with manual swipe/scroll
   let scrollT;
@@ -2008,32 +2019,6 @@ counters.forEach(c => counterIO.observe(c));
     }, 120);
   });
 
-  // Only run while the section is actually on screen and the tab is in front
-  let inView = false;
-
-  function stopAuto() { clearInterval(autoTimer); autoTimer = null; }
-
-  function resetAuto() {
-    stopAuto();
-    if (!inView || document.hidden) return;
-    autoTimer = setInterval(() => goTo(current + 1), 5500);
-  }
-
-  track.addEventListener('mouseenter', stopAuto);
-  track.addEventListener('mouseleave', resetAuto);
-  track.addEventListener('touchstart', stopAuto, { passive: true });
-  document.addEventListener('visibilitychange', resetAuto);
-
-  const section = document.getElementById('testimonials');
-  if (window.IntersectionObserver && section) {
-    new IntersectionObserver((entries) => {
-      inView = entries[0].isIntersecting;
-      resetAuto();
-    }, { threshold: 0.25 }).observe(section);
-  } else {
-    inView = true;
-    resetAuto();
-  }
 })();
 
 /* Mobile hamburger menu */
