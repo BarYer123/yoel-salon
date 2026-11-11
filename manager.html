@@ -201,7 +201,9 @@ let password = '';
 let images = [];
 let dragSrc = null;
 let saving = false;
-let ghToken = null, ghOwner = null, ghRepo = null, ghUploadBranch = null, ghDataBranch = null;
+let uploading = false;
+let gallerySha = null;
+let saveQueue = Promise.resolve();
 
 // Login
 document.getElementById('loginBtn').addEventListener('click', login);
@@ -217,27 +219,29 @@ function setStatus(text, mode) {
 
 // Persist current images[] to gallery.json (auto-save). Returns true on success.
 async function persist() {
+  const snapshot = images.slice();
   saving = true;
-  setStatus('שומר...', 'saving');
-  try {
-    const res = await fetch(API, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password, action: 'reorder', images })
-    });
-    const data = await res.json();
-    if (data.success) {
+  saveQueue = saveQueue.then(async () => {
+    setStatus('שומר...', 'saving');
+    try {
+      const res = await fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password, action: 'reorder', images: snapshot, expectedSha: gallerySha })
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error || 'השמירה נכשלה');
+      gallerySha = data.sha;
       setStatus('נשמר ✓ — יתעדכן באתר תוך ~5 דקות', '');
       return true;
+    } catch (e) {
+      setStatus('שגיאה בשמירה: ' + e.message, 'err');
+      return false;
+    } finally {
+      saving = false;
     }
-    setStatus('שגיאה בשמירה: ' + (data.error || ''), 'err');
-    return false;
-  } catch (e) {
-    setStatus('שגיאת רשת בשמירה: ' + e.message, 'err');
-    return false;
-  } finally {
-    saving = false;
-  }
+  });
+  return saveQueue;
 }
 
 async function login() {
@@ -262,23 +266,16 @@ async function login() {
     }
 
     const verifyData = await verifyRes.json();
-    ghToken        = verifyData.token;
-    ghOwner        = verifyData.owner;
-    ghRepo         = verifyData.repo;
-    ghUploadBranch = verifyData.uploadBranch;
-    ghDataBranch   = verifyData.dataBranch;
-
-    const res = await fetch(`https://raw.githubusercontent.com/${ghOwner}/${ghRepo}/${ghDataBranch}/gallery.json?t=` + Date.now());
-    const data = await res.json();
-
+    if (!verifyRes.ok || !verifyData.success) throw new Error(verifyData.error || 'שגיאת חיבור');
     password = pwd;
-    images = Array.isArray(data.images) ? data.images : [];
+    gallerySha = verifyData.sha;
+    images = Array.isArray(verifyData.images) ? verifyData.images : [];
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminScreen').style.display = 'block';
     renderGallery();
     setStatus('מחובר ✓ — כל שינוי נשמר אוטומטית', '');
   } catch (e) {
-    document.getElementById('loginError').textContent = 'שגיאת חיבור';
+    document.getElementById('loginError').textContent = e.message || 'שגיאת חיבור';
     btn.disabled = false;
     btn.textContent = 'כניסה';
   }
@@ -288,19 +285,44 @@ async function login() {
 function renderGallery() {
   const grid = document.getElementById('galleryGrid');
   document.getElementById('imageCount').textContent = `${images.length} פריטים`;
-  grid.innerHTML = images.map((src, i) => `
-    <div class="gallery-item" draggable="true" data-index="${i}" data-src="${src}">
-      ${/\.mp4(?:[?#]|$)/i.test(src)
-        ? `<video src="${src.startsWith('http') ? src : '/' + src}" preload="metadata" muted playsinline></video><span class="video-badge">▶ וידאו</span>`
-        : `<img src="${src.startsWith('http') ? src : '/' + src}" alt="תמונה ${i+1}" loading="lazy">`}
-      <div class="item-num">${i < 6 ? '★' : i + 1}</div>
-      <button class="del-btn" title="מחק" onclick="deleteImage('${src}')">×</button>
-    </div>
-  `).join('');
+  grid.replaceChildren();
+  images.forEach((src, i) => {
+    const item = document.createElement('div');
+    item.className = 'gallery-item';
+    item.draggable = true;
+    item.dataset.index = i;
+    const media = document.createElement(/\.mp4(?:[?#]|$)/i.test(src) ? 'video' : 'img');
+    media.src = src.startsWith('https://') ? src : '/' + src;
+    if (media.tagName === 'VIDEO') {
+      media.preload = 'metadata';
+      media.muted = true;
+      media.playsInline = true;
+      const badge = document.createElement('span');
+      badge.className = 'video-badge';
+      badge.textContent = '▶ וידאו';
+      item.append(media, badge);
+    } else {
+      media.alt = `תמונה ${i + 1}`;
+      media.loading = 'lazy';
+      item.append(media);
+    }
+    const number = document.createElement('div');
+    number.className = 'item-num';
+    number.textContent = i < 6 ? '★' : i + 1;
+    const del = document.createElement('button');
+    del.className = 'del-btn';
+    del.type = 'button';
+    del.title = 'מחק';
+    del.textContent = '×';
+    del.addEventListener('click', () => deleteImage(src));
+    item.append(number, del);
+    grid.append(item);
+  });
 
   // Drag & drop
   grid.querySelectorAll('.gallery-item').forEach(item => {
     item.addEventListener('dragstart', e => {
+      if (saving || uploading) { e.preventDefault(); return; }
       dragSrc = item;
       item.classList.add('dragging');
       e.dataTransfer.effectAllowed = 'move';
@@ -318,6 +340,7 @@ function renderGallery() {
     });
     item.addEventListener('drop', async e => {
       e.preventDefault();
+      if (saving || uploading) return;
       if (dragSrc && item !== dragSrc) {
         const fromIdx = parseInt(dragSrc.dataset.index);
         const toIdx = parseInt(item.dataset.index);
@@ -332,6 +355,7 @@ function renderGallery() {
 
 // delete + auto-save immediately
 async function deleteImage(src) {
+  if (saving || uploading) return;
   const idx = images.indexOf(src);
   if (idx === -1) return;
   if (!confirm('למחוק את הפריט מהגלריה?')) return;
@@ -357,8 +381,10 @@ uploadArea.addEventListener('drop', e => {
 fileInput.addEventListener('change', () => handleFiles(Array.from(fileInput.files)));
 
 async function handleFiles(files) {
+  if (saving || uploading) return;
   const mediaFiles = files.filter(f => f.type.startsWith('image/') || f.type === 'video/mp4');
   if (!mediaFiles.length) { showToast('אפשר להעלות תמונות או סרטוני MP4 בלבד', true); return; }
+  uploading = true;
 
   const progressBar = document.getElementById('progressBar');
   const progressFill = document.getElementById('progressFill');
@@ -378,7 +404,9 @@ async function handleFiles(files) {
   if (ok > 0) {
     const saved = await persist();
     if (saved) showToast(`${ok} פריטים נוספו ופורסמו ✓`);
+    else showToast('הקבצים הועלו, אבל הגלריה לא נשמרה. יש לרענן ולנסות שוב.', true);
   }
+  uploading = false;
 }
 
 async function uploadFile(file) {
@@ -389,42 +417,31 @@ async function uploadFile(file) {
       return false;
     }
     const upload = isVideo ? file : await compressImage(file, 1200, 0.82);
-    const dataUrl = await toBase64(upload);
-    const rawBase64 = dataUrl.split(',')[1];
-
-    const ext = isVideo ? 'mp4' : (file.name.split('.').pop().toLowerCase() || 'jpg');
-    const filename = `gallery_${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${ext}`;
-    const filePath = `${isVideo ? 'videos' : 'images'}/${filename}`;
-    // strip newlines from base64 (required by GitHub API)
-    const cleanBase64 = rawBase64.replace(/[\r\n]/g, '');
-
-    // 1. Upload image directly from browser to GitHub data branch
-    const uploadRes = await fetch(`https://api.github.com/repos/${ghOwner}/${ghRepo}/contents/${filePath}`, {
-      method: 'PUT',
-      headers: {
-        Authorization: `token ${ghToken}`,
-        Accept: 'application/vnd.github.v3+json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ message: `Upload ${filename}`, content: cleanBase64, branch: ghUploadBranch })
-    });
-
-    if (!uploadRes.ok) {
-      const err = await uploadRes.json().catch(() => ({}));
-      showToast('שגיאה בהעלאה: ' + (err.message || uploadRes.status), true);
-      return false;
+    const shas = [];
+    for (let offset = 0; offset < upload.size; offset += 2 * 1024 * 1024) {
+      const chunk = (await toBase64(upload.slice(offset, offset + 2 * 1024 * 1024))).split(',')[1];
+      const part = await galleryRequest('upload-chunk', { chunk });
+      shas.push(part.sha);
     }
-
-    const rawUrl = `https://raw.githubusercontent.com/${ghOwner}/${ghRepo}/${ghUploadBranch}/${filePath}`;
-
-    // 2. Add to local list (handleFiles persists the batch once)
-    images.unshift(rawUrl);
+    const result = await galleryRequest('upload-complete', { shas, kind: isVideo ? 'video' : 'image' });
+    images.unshift(result.rawUrl);
     renderGallery();
     return true;
   } catch (e) {
     showToast('שגיאת רשת: ' + e.message, true);
     return false;
   }
+}
+
+async function galleryRequest(action, payload) {
+  const response = await fetch(API, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ password, action, ...payload })
+  });
+  const data = await response.json();
+  if (!response.ok || !data.success) throw new Error(data.error || 'הפעולה נכשלה');
+  return data;
 }
 
 function compressImage(file, maxPx, quality) {
